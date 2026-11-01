@@ -270,3 +270,195 @@ export async function updateOrderStatus(orderId, status) {
   return data;
 }
 
+
+
+export async function getMarketplaceProducts() {
+  const response = await fetch(`${API_BASE_URL}/products`, {
+    method: "GET",
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to fetch marketplace products"
+    );
+  }
+
+  return data;
+}
+
+
+
+export async function getProductById(productId) {
+  const response = await fetch(
+    `${API_BASE_URL}/products/${productId}`
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to fetch product details"
+    );
+  }
+
+  return data;
+}
+
+
+
+export async function createPurchaseRequest(requestData) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/purchase-requests`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(requestData),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to send purchase request"
+    );
+  }
+
+  return data;
+}
+
+
+
+export async function confirmOrderDelivery(orderId) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/orders/${orderId}/confirm-delivery`,
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to confirm delivery"
+    );
+  }
+
+  return data;
+}
+
+
+
+export async function getMyDeliveries() {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/orders/my-deliveries`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to fetch assigned deliveries"
+    );
+  }
+
+  return data;
+}
+
+export async function updateDeliveryStatus(orderId, deliveryStatus) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/orders/${orderId}/delivery-status`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ deliveryStatus }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to update delivery status"
+    );
+  }
+
+  return data;
+}
+
+
+
+export async function getAllUsers() {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/admin/users`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to fetch registered users"
+    );
+  }
+
+  return data;
+}
+
+
+
+export async function updateUserStatus(userId, status) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/users/${userId}/status`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to update user status"
+    );
+  }
+
+  return data;
+}

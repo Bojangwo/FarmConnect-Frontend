@@ -9,6 +9,11 @@ import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import FarmerPurchaseRequests from "./pages/FarmerPurchaseRequests";
 import FarmerOrders from "./pages/FarmerOrders";
+import BuyerMarketplace from "./pages/BuyerMarketplace";
+import BuyerProductDetails from "./pages/BuyerProductDetails";
+import BuyerOrders from "./pages/BuyerOrders";
+import DeliveryAgentDashboard from "./pages/DeliveryAgentDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -16,6 +21,38 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      <Route
+  path="/buyer/marketplace"
+  element={<BuyerMarketplace />}
+/>
+<Route
+  path="/buyer/products/:id"
+  element={<BuyerProductDetails />}
+/>
+
+<Route element={<ProtectedRoute allowedRoles={["buyer"]} />}>
+  <Route
+    path="/buyer/orders"
+    element={<BuyerOrders />}
+  />
+</Route>
+
+<Route element={<ProtectedRoute allowedRoles={["deliveryAgent"]} />}>
+  <Route
+    path="/delivery/dashboard"
+    element={<DeliveryAgentDashboard />}
+  />
+</Route>
+
+
+<Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+  <Route
+    path="/admin/dashboard"
+    element={<AdminDashboard />}
+  />
+</Route>
+
 
       <Route element={<ProtectedRoute allowedRoles={["farmer"]} />}>
         <Route
