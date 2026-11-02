@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllUsers, updateUserStatus } from "../services/api";
+import { Link } from "react-router-dom";
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -78,13 +79,33 @@ async function handleStatusChange(userId, newStatus) {
   return (
     <div className="min-h-screen bg-green-50 p-6">
       <div className="mx-auto max-w-7xl">
-        <h1 className="mb-2 text-3xl font-bold text-green-800">
-          FarmConnect Admin Dashboard 🌾
-        </h1>
+        
+<h1 className="mb-2 text-3xl font-bold text-green-800">
+  FarmConnect Admin Dashboard 🌾
+</h1>
 
-        <p className="mb-8 text-gray-600">
-          Manage marketplace users and monitor platform activity.
-        </p>
+<p className="mb-4 text-gray-600">
+  Manage marketplace users and monitor platform activity.
+</p>
+
+
+<div className="mb-8 flex flex-wrap gap-3">
+  <Link
+    to="/admin/categories"
+    className="inline-block rounded-lg bg-green-700 px-5 py-3 font-medium text-white hover:bg-green-800"
+  >
+    🌱 Manage Categories
+  </Link>
+
+  <Link
+    to="/admin/orders"
+    className="inline-block rounded-lg bg-blue-700 px-5 py-3 font-medium text-white hover:bg-blue-800"
+  >
+    🚚 Manage Orders
+  </Link>
+</div>
+
+
 
         {loading && (
           <p className="text-gray-600">Loading users...</p>

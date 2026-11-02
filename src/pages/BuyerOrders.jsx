@@ -146,7 +146,12 @@ setOrders((previousOrders) =>
                   </p>
 
                   <p>
-                    <strong>Total:</strong> D{order.total ?? "N/A"}
+                    
+<strong>Total:</strong>{" "}
+{order.totalAmount != null
+  ? `D${Number(order.totalAmount).toFixed(2)}`
+  : "N/A"}
+
                   </p>
 
                   <p>

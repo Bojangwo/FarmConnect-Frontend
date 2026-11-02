@@ -462,3 +462,165 @@ export async function updateUserStatus(userId, status) {
 
   return data;
 }
+
+
+
+export async function createCategory(categoryData) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/categories`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(categoryData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to create category"
+    );
+  }
+
+  return data;
+}
+
+
+
+export async function updateCategory(categoryId, categoryData) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/categories/${categoryId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(categoryData),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to update category"
+    );
+  }
+
+  return data;
+}
+
+
+
+export async function deactivateCategory(categoryId) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/categories/${categoryId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to deactivate category"
+    );
+  }
+
+  return data;
+}
+
+
+
+export async function getAllCategoriesAdmin() {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/categories`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to fetch admin categories"
+    );
+  }
+
+  return data;
+}
+
+
+
+export async function getAllOrdersAdmin() {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/orders`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to fetch orders"
+    );
+  }
+
+  return data;
+}
+
+
+
+export async function assignDeliveryAgentAdmin(
+  orderId,
+  deliveryAgentId
+) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/orders/${orderId}/assign-delivery`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ deliveryAgentId }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to assign delivery agent"
+    );
+  }
+
+  return data;
+}

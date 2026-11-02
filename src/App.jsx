@@ -14,6 +14,8 @@ import BuyerProductDetails from "./pages/BuyerProductDetails";
 import BuyerOrders from "./pages/BuyerOrders";
 import DeliveryAgentDashboard from "./pages/DeliveryAgentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminCategories from "./pages/AdminCategories";
+import AdminOrders from "./pages/AdminOrders";
 
 function App() {
   return (
@@ -47,10 +49,9 @@ function App() {
 
 
 <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-  <Route
-    path="/admin/dashboard"
-    element={<AdminDashboard />}
-  />
+  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+  <Route path="/admin/categories" element={<AdminCategories />} />
+  <Route path="/admin/orders" element={<AdminOrders />} />
 </Route>
 
 
