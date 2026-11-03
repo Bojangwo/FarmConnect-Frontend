@@ -37,25 +37,44 @@ async function handlePayNow(orderId) {
   }
 }
 
-  useEffect(() => {
-    async function loadOrders() {
-      try {
-        const data = await getMyOrders();
+  
+useEffect(() => {
+  let active = true;
 
-        const orderList = Array.isArray(data)
-          ? data
-          : data.orders || [];
+  async function loadOrders() {
+    try {
+      const data = await getMyOrders();
 
-        setOrders(orderList);
-      } catch (err) {
+      if (!active) return;
+
+      const orderList = Array.isArray(data)
+        ? data
+        : data.orders || [];
+
+      setOrders(orderList);
+      setError("");
+    } catch (err) {
+      if (active) {
         setError(err.message);
-      } finally {
+      }
+    } finally {
+      if (active) {
         setLoading(false);
       }
     }
+  }
 
-    loadOrders();
-  }, []);
+  loadOrders();
+
+  // Refresh orders every 10 seconds.
+  const interval = setInterval(loadOrders, 10000);
+
+  return () => {
+    active = false;
+    clearInterval(interval);
+  };
+}, []);
+
 
   
 const [confirmingId, setConfirmingId] = useState(null);
@@ -195,6 +214,47 @@ setOrders((previousOrders) =>
                     {order.farmer?.name || "Not available"}
                   </p>
                 </div>
+
+
+{order.paymentStatus === "pending" && (
+  <div className="mt-4 rounded-lg bg-yellow-50 p-4">
+    <p className="text-sm text-yellow-800">
+      Your payment is being processed or verified.
+      This page checks for updates automatically.
+      Please do not make another payment.
+    </p>
+  </div>
+)}
+
+
+{order.paymentStatus === "paid" && (
+  <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4">
+    <p className="font-semibold text-green-800">
+      ✓ Payment Successful!
+    </p>
+    <p className="mt-1 text-sm text-green-700">
+      Your payment has been confirmed.
+      You don't need to pay again.
+      You can now track your order and delivery progress.
+    </p>
+  </div>
+)}
+
+
+{order.paymentStatus === "failed" && (
+  <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4">
+    <p className="font-semibold text-red-800">
+      Payment Could Not Be Confirmed
+    </p>
+    <p className="mt-1 text-sm text-red-700">
+      Your previous payment attempt was unsuccessful.
+      If money was deducted, please contact support
+      before trying again.
+      Otherwise, you can use the Pay Now button
+      to start a new payment.
+    </p>
+  </div>
+)}
 
                 
 {order.status === "pending" &&
