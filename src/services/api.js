@@ -624,3 +624,53 @@ export async function assignDeliveryAgentAdmin(
 
   return data;
 }
+
+
+
+export async function initiatePayment(orderId) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/payments/${orderId}/initiate`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to initiate payment"
+    );
+  }
+
+  return data;
+}
+
+export async function verifyPayment(paymentId) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/payments/${paymentId}/verify`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to verify payment"
+    );
+  }
+
+  return data;
+}

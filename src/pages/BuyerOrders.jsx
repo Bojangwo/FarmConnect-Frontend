@@ -1,15 +1,41 @@
 
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
 import {
   getMyOrders,
   confirmOrderDelivery,
+  initiatePayment,
 } from "../services/api";
+
 
 function BuyerOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  
+const [payingId, setPayingId] = useState(null);
+
+async function handlePayNow(orderId) {
+  try {
+    setPayingId(orderId);
+    setError("");
+
+    const data = await initiatePayment(orderId);
+
+    if (!data.paymentLink) {
+      throw new Error("Payment link was not returned");
+    }
+
+    // Redirect the buyer to ModemPay's checkout page.
+    window.location.assign(data.paymentLink);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setPayingId(null);
+  }
+}
 
   useEffect(() => {
     async function loadOrders() {
@@ -169,6 +195,25 @@ setOrders((previousOrders) =>
                     {order.farmer?.name || "Not available"}
                   </p>
                 </div>
+
+                
+{order.status === "pending" &&
+  ["unpaid", "failed"].includes(order.paymentStatus) && (
+    <div className="mt-4 rounded-lg bg-blue-50 p-4">
+      <p className="mb-3 text-sm text-blue-800">
+        Complete your payment securely through ModemPay.
+      </p>
+
+      <button
+        type="button"
+        onClick={() => handlePayNow(order._id)}
+        disabled={payingId === order._id}
+        className="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
+      >
+        {payingId === order._id ? "Preparing Payment..." : "Pay Now"}
+      </button>
+    </div>
+  )}
 
              
 {order.deliveryStatus === "delivered" &&
