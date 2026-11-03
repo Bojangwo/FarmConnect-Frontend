@@ -1,6 +1,10 @@
 
 import { useEffect, useState } from "react";
-import { getMyDeliveries, updateDeliveryStatus } from "../services/api";
+import {
+  getMyDeliveries,
+  updateDeliveryStatus,
+  updateDeliveryLocation,
+} from "../services/api";
 
 const nextStatus = {
   assigned: "picked_up",
@@ -19,6 +23,8 @@ function DeliveryAgentDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState(null);
+  const [sharingLocationId, setSharingLocationId] = useState(null);
+const [locationMessage, setLocationMessage] = useState("");
 
   useEffect(() => {
     async function loadDeliveries() {
@@ -73,6 +79,52 @@ setDeliveries((previous) =>
     }
   }
 
+  async function handleShareLocation(order) {
+  if (!navigator.geolocation) {
+    setError("Your browser does not support GPS location.");
+    return;
+  }
+
+  if (sharingLocationId) return;
+
+  setSharingLocationId(order._id);
+  setLocationMessage("");
+  setError("");
+
+  try {
+    const position = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
+      });
+    });
+
+    await updateDeliveryLocation(
+      order._id,
+      position.coords.latitude,
+      position.coords.longitude,
+      position.coords.accuracy
+    );
+
+    setLocationMessage(
+      `Location shared successfully for order ${order.orderNumber}!`
+    );
+  } catch (err) {
+    setError(
+      err.code === 1
+        ? "Location permission denied. Please allow location access in your browser."
+        : err.code === 2
+          ? "Your location is unavailable. Check your device location settings."
+          : err.code === 3
+            ? "GPS request timed out. Please try again."
+            : err.message || "Unable to share your location."
+    );
+  } finally {
+    setSharingLocationId(null);
+  }
+}
+
   return (
     <div className="min-h-screen bg-green-50 p-6">
       <div className="mx-auto max-w-6xl">
@@ -91,6 +143,12 @@ setDeliveries((previous) =>
             {error}
           </p>
         )}
+
+        {locationMessage && (
+  <p className="mb-5 rounded-lg bg-blue-100 p-4 text-blue-800">
+    {locationMessage}
+  </p>
+)}
 
         {!loading && deliveries.length === 0 && !error && (
           <div className="rounded-xl bg-white p-8 text-center shadow-sm">
@@ -165,6 +223,19 @@ setDeliveries((previous) =>
                     : `Mark as ${formatStatus(nextStatus[order.deliveryStatus])}`}
                 </button>
               )}
+
+              {["picked_up", "in_transit"].includes(order.deliveryStatus) && (
+  <button
+    type="button"
+    onClick={() => handleShareLocation(order)}
+    disabled={sharingLocationId !== null}
+    className="mt-5 ml-3 rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
+  >
+    {sharingLocationId === order._id
+      ? "Getting Location..."
+      : "📍 Share My Location"}
+  </button>
+)}
 
               {order.deliveryStatus === "delivered" && (
                 <p className="mt-4 rounded-lg bg-green-100 p-3 text-green-800">

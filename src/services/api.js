@@ -412,6 +412,40 @@ export async function updateDeliveryStatus(orderId, deliveryStatus) {
   return data;
 }
 
+export async function updateDeliveryLocation(
+  orderId,
+  latitude,
+  longitude,
+  accuracy
+) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/orders/${orderId}/delivery-location`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        latitude,
+        longitude,
+        accuracy,
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to update delivery location"
+    );
+  }
+
+  return data;
+}
 
 
 export async function getAllUsers() {
@@ -487,7 +521,6 @@ export async function createCategory(categoryData) {
 
   return data;
 }
-
 
 
 export async function updateCategory(categoryId, categoryData) {
@@ -624,7 +657,6 @@ export async function assignDeliveryAgentAdmin(
 
   return data;
 }
-
 
 
 export async function initiatePayment(orderId) {
