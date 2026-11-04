@@ -1,4 +1,3 @@
-
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -701,6 +700,77 @@ export async function verifyPayment(paymentId) {
   if (!response.ok) {
     throw new Error(
       data.message || "Failed to verify payment"
+    );
+  }
+
+  return data;
+}
+
+
+// Get the latest delivery location for the logged-in buyer
+export async function getBuyerDeliveryLocation(orderId) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/orders/${orderId}/delivery-location`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to fetch delivery location"
+    );
+  }
+
+  return data;
+}
+
+
+export async function createReview(orderId, rating, comment) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(`${API_BASE_URL}/reviews`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      orderId,
+      rating,
+      comment,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to submit review"
+    );
+  }
+
+  return data;
+}
+
+
+export async function getFarmerReviews(farmerId) {
+  const response = await fetch(
+    `${API_BASE_URL}/reviews/farmer/${farmerId}`
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to fetch farmer reviews"
     );
   }
 

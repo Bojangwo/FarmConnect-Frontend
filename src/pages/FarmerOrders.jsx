@@ -186,7 +186,14 @@ async function handleUpdateStatus(orderId, newStatus) {
       ready_for_delivery: [],
 
     }[order.status] || []
-  ).map((action) => (
+    )
+    .filter(
+      (action) =>
+        action.status === "cancelled" ||
+        order.paymentStatus === "paid" ||
+        order.paymentMethod === "cod"
+    )
+    .map((action) => (
     <button
       key={action.status}
       type="button"

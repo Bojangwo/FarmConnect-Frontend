@@ -1,21 +1,57 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
 import {
   getMyOrders,
   confirmOrderDelivery,
   initiatePayment,
+  createReview,
 } from "../services/api";
-
+import DeliveryTrackingMap from "../components/DeliveryTrackingMap";
+import { getBuyerDeliveryLocation } from "../services/api";
 
 function BuyerOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  
+  const [trackingOrderId, setTrackingOrderId] = useState(null);
+  const [deliveryLocation, setDeliveryLocation] = useState(null);
+const [trackingLoading, setTrackingLoading] = useState(false);
+const [trackingError, setTrackingError] = useState("");
+const [currentTime, setCurrentTime] = useState(Date.now()); 
 const [payingId, setPayingId] = useState(null);
+const [reviewingOrderId, setReviewingOrderId] = useState(null);
+const [reviewRating, setReviewRating] = useState(5);
+const [reviewComment, setReviewComment] = useState("");
+const [submittingReview, setSubmittingReview] = useState(false);
+const [reviewSuccess, setReviewSuccess] = useState("");
+const [reviewedOrderIds, setReviewedOrderIds] = useState([]);
+
+async function handleSubmitReview(orderId) {
+  try {
+    setSubmittingReview(true);
+    setError("");
+    setReviewSuccess("");
+
+    await createReview(orderId, reviewRating, reviewComment.trim());
+
+    setReviewedOrderIds((previous) => [...previous, orderId]);
+
+    setReviewSuccess("Your review was submitted successfully!");
+
+    setReviewingOrderId(null);
+    setReviewRating(5);
+    setReviewComment("");
+  } catch (err) {
+    setError(err.message);
+
+    if (err.message === "This order has already been reviewed") {
+      setReviewedOrderIds((previous) => [...previous, orderId]);
+      setReviewingOrderId(null);
+    }
+  } finally {
+    setSubmittingReview(false);
+  }
+}
 
 async function handlePayNow(orderId) {
   try {
@@ -113,6 +149,67 @@ setOrders((previousOrders) =>
     setConfirmingId(null);
   }
 }
+
+
+useEffect(() => {
+  if (!trackingOrderId) {
+    return;
+  }
+
+  let active = true;
+
+  setDeliveryLocation(null);
+  setTrackingError("");
+  setTrackingLoading(true);
+
+  async function loadDeliveryLocation() {
+    try {
+      const data = await getBuyerDeliveryLocation(trackingOrderId);
+
+      if (!active) return;
+
+      if (data.trackingAvailable) {
+        setDeliveryLocation(data.location);
+        setTrackingError("");
+      } else {
+        setDeliveryLocation(null);
+        setTrackingError(
+          data.message || "Delivery tracking is not available yet."
+        );
+      }
+    } catch (err) {
+      if (active) {
+        setTrackingError(err.message);
+      }
+    } finally {
+      if (active) {
+        setTrackingLoading(false);
+      }
+    }
+  }
+
+  loadDeliveryLocation();
+
+  const interval = setInterval(loadDeliveryLocation, 15000);
+
+  return () => {
+    active = false;
+    clearInterval(interval);
+  };
+}, [trackingOrderId]);
+
+
+useEffect(() => {
+  if (!trackingOrderId) return;
+
+  setCurrentTime(Date.now());
+
+  const timer = setInterval(() => {
+    setCurrentTime(Date.now());
+  }, 5000);
+
+  return () => clearInterval(timer);
+}, [trackingOrderId]);
 
 
   function formatStatus(status) {
@@ -275,6 +372,25 @@ setOrders((previousOrders) =>
     </div>
   )}
 
+  {order.status === "ready_for_delivery" &&
+  ["picked_up", "in_transit"].includes(order.deliveryStatus) && (
+    <div className="mt-4">
+      <button
+        type="button"
+        onClick={() =>
+          setTrackingOrderId((current) =>
+            current === order._id ? null : order._id
+          )
+        }
+        className="rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800"
+      >
+        {trackingOrderId === order._id
+          ? "✕ Hide Delivery Tracking"
+          : "📍 Track Delivery"}
+      </button>
+    </div>
+  )}
+
              
 {order.deliveryStatus === "delivered" &&
   order.status === "ready_for_delivery" &&
@@ -299,11 +415,143 @@ setOrders((previousOrders) =>
   )}
 
 
+  {trackingOrderId === order._id && (
+  <div className="mt-4 space-y-3">
+    {trackingLoading && (
+      <p className="text-sm text-gray-600">
+        Loading delivery location...
+      </p>
+    )}
+
+    {trackingError && (
+      <p className="rounded-lg bg-yellow-50 p-3 text-sm text-yellow-800">
+        {trackingError}
+      </p>
+    )}
+
+    {deliveryLocation && (
+      <>
+        <DeliveryTrackingMap location={deliveryLocation} />
+
+        <p className="text-sm text-gray-600">
+          Last GPS update:{" "}
+          {new Date(deliveryLocation.updatedAt).toLocaleString()}
+        </p>
+
+        {(() => {
+  const updatedAt = new Date(deliveryLocation.updatedAt).getTime();
+
+  const isRecent =
+    Number.isFinite(updatedAt) &&
+    updatedAt <= currentTime &&
+    currentTime - updatedAt <= 30000;
+
+  return (
+    <p
+      className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${
+        isRecent
+          ? "bg-green-100 text-green-800"
+          : "bg-yellow-100 text-yellow-800"
+      }`}
+    >
+      {isRecent
+        ? "● Recently updated"
+        : "● Location may be outdated"}
+    </p>
+  );
+})()}
+
+        <p className="text-xs text-gray-500">
+          This shows the agent's last reported position.
+          The location may be outdated if the agent has stopped sharing.
+        </p>
+      </>
+    )}
+  </div>
+)}
+
+
                 {order.buyerConfirmedDelivery && (
                   <p className="mt-4 rounded-lg bg-green-100 p-3 text-sm text-green-800">
                     Delivery confirmed. Thank you for shopping with FarmConnect!
                   </p>
                 )}
+
+                {order.status === "completed" &&
+  order.paymentStatus === "paid" && (
+    <div className="mt-4">
+      <button
+        type="button"
+        onClick={() =>
+          setReviewingOrderId((current) =>
+            current === order._id ? null : order._id
+          )
+        }
+        className="rounded-lg bg-yellow-500 px-4 py-2 font-semibold text-white hover:bg-yellow-600"
+      >
+        ⭐ {reviewingOrderId === order._id
+          ? "Cancel Review"
+          : "Write a Review"}
+      </button>
+    </div>
+  )}
+
+  {reviewingOrderId === order._id &&
+  order.status === "completed" &&
+  order.paymentStatus === "paid" &&
+  !reviewedOrderIds.includes(order._id) && (
+    <div className="mt-4 rounded-xl border border-yellow-200 bg-yellow-50 p-5">
+      <h3 className="mb-3 text-lg font-semibold text-gray-800">
+        Review {order.product?.name || "this product"}
+      </h3>
+
+      <p className="mb-2 text-sm text-gray-600">
+        How would you rate your experience?
+      </p>
+
+      <div className="mb-4 flex gap-2">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => setReviewRating(star)}
+            aria-label={`Rate ${star} stars`}
+            aria-pressed={reviewRating === star}
+            className={`text-3xl ${
+              star <= reviewRating
+                ? "text-yellow-500"
+                : "text-gray-300"
+            }`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+
+      <textarea
+        value={reviewComment}
+        onChange={(e) => setReviewComment(e.target.value)}
+        maxLength={1000}
+        rows={4}
+        placeholder="Share your experience with this farmer and product..."
+        className="w-full rounded-lg border border-gray-300 p-3 focus:border-green-600 focus:outline-none"
+      />
+
+      <p className="mt-1 text-right text-xs text-gray-500">
+        {reviewComment.length}/1000 characters
+      </p>
+
+      <button
+  type="button"
+  onClick={() => handleSubmitReview(order._id)}
+  disabled={submittingReview}
+  className="mt-3 rounded-lg bg-green-700 px-5 py-2 font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+>
+  {submittingReview ? "Submitting..." : "Submit Review"}
+</button>
+    </div>
+  )}
+                
               </div>
             ))}
           </div>

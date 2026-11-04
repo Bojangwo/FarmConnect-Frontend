@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getMyDeliveries,
   updateDeliveryStatus,
@@ -25,6 +24,17 @@ function DeliveryAgentDashboard() {
   const [updatingId, setUpdatingId] = useState(null);
   const [sharingLocationId, setSharingLocationId] = useState(null);
 const [locationMessage, setLocationMessage] = useState("");
+const [trackingOrderId, setTrackingOrderId] = useState(null);
+
+// Store the browser's active GPS watcher.
+const watchIdRef = useRef(null);
+
+const lastLocationUpdateRef = useRef(0);
+const locationRequestInProgressRef = useRef(false);
+const trackingSessionRef = useRef(0);
+
+// Remember which order is being tracked.
+const trackingOrderIdRef = useRef(null);
 
   useEffect(() => {
     async function loadDeliveries() {
@@ -44,6 +54,18 @@ const [locationMessage, setLocationMessage] = useState("");
     loadDeliveries();
   }, []);
 
+  useEffect(() => {
+  return () => {
+    trackingSessionRef.current += 1;
+    if (watchIdRef.current !== null) {
+      navigator.geolocation?.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
+
+    trackingOrderIdRef.current = null;
+  };
+}, []);
+
   async function handleUpdate(order) {
     const status = nextStatus[order.deliveryStatus];
     if (!status) return;
@@ -53,6 +75,11 @@ const [locationMessage, setLocationMessage] = useState("");
       setError("");
 
       const result = await updateDeliveryStatus(order._id, status);
+
+      // Stop GPS tracking when the delivery is marked as delivered.
+if (status === "delivered" && trackingOrderIdRef.current === order._id) {
+  handleStopTracking();
+}
 
       
 setDeliveries((previous) =>
@@ -123,6 +150,137 @@ setDeliveries((previous) =>
   } finally {
     setSharingLocationId(null);
   }
+}
+
+function handleStartTracking(order) {
+  if (!navigator.geolocation) {
+    setError("Your browser does not support location tracking.");
+    return;
+  }
+
+  if (watchIdRef.current !== null) {
+    setError("Stop the current tracking session first.");
+    return;
+  }
+
+  if (!["picked_up", "in_transit"].includes(order.deliveryStatus)) {
+    setError("Tracking is only available for active deliveries.");
+    return;
+  }
+
+  setError("");
+  setLocationMessage("Waiting for your location...");
+
+  trackingOrderIdRef.current = order._id;
+  setTrackingOrderId(order._id);
+
+  lastLocationUpdateRef.current = 0;
+locationRequestInProgressRef.current = false;
+const sessionId = ++trackingSessionRef.current;
+
+  const watchId = navigator.geolocation.watchPosition(
+    async (position) => {
+  if (
+  trackingOrderIdRef.current !== order._id ||
+  trackingSessionRef.current !== sessionId
+) {
+  return;
+}
+
+  const now = Date.now();
+
+  // Allow only one request at a time.
+  if (locationRequestInProgressRef.current) return;
+
+  // Wait at least 15 seconds between requests.
+  if (now - lastLocationUpdateRef.current < 15000) return;
+
+  locationRequestInProgressRef.current = true;
+lastLocationUpdateRef.current = now;
+
+try {
+  // Make sure this tracking session is still active.
+  if (
+    trackingOrderIdRef.current !== order._id ||
+    trackingSessionRef.current !== sessionId
+  ) {
+    return;
+  }
+
+  await updateDeliveryLocation(
+          order._id,
+          position.coords.latitude,
+          position.coords.longitude,
+          position.coords.accuracy
+        );
+
+        if (
+  trackingOrderIdRef.current === order._id &&
+  trackingSessionRef.current === sessionId
+) {
+          setLocationMessage(
+            `Live location updated for order ${order.orderNumber}.`
+          );
+        }
+      } catch (err) {
+  if (
+  trackingOrderIdRef.current === order._id &&
+  trackingSessionRef.current === sessionId
+) {
+    setError(err.message || "Unable to update live location.");
+  }
+} finally {
+  if (trackingSessionRef.current === sessionId) {
+    locationRequestInProgressRef.current = false;
+  }
+}
+    },
+    (err) => {
+  if (
+  trackingOrderIdRef.current !== order._id ||
+  trackingSessionRef.current !== sessionId
+) {
+  return;
+}
+
+  const message =
+    err.code === 1
+      ? "Location permission denied. Please allow location access."
+      : err.code === 2
+        ? "Your location is unavailable. Check your device settings."
+        : "GPS request timed out. Please try again.";
+
+  // Stop the active GPS watcher.
+  handleStopTracking();
+
+  // Display the error after stopping tracking.
+  setLocationMessage("");
+  setError(message);
+},
+    {
+      enableHighAccuracy: true,
+      timeout: 30000,
+      maximumAge: 5000,
+    }
+  );
+
+  watchIdRef.current = watchId;
+}
+
+function handleStopTracking() {
+  trackingSessionRef.current += 1;
+  // Prevent any more location updates for this order.
+  trackingOrderIdRef.current = null;
+
+  // Stop watching the device's GPS location.
+  if (watchIdRef.current !== null) {
+    navigator.geolocation.clearWatch(watchIdRef.current);
+    watchIdRef.current = null;
+  }
+
+  // Update the dashboard.
+  setTrackingOrderId(null);
+  setLocationMessage("Live GPS tracking stopped.");
 }
 
   return (
@@ -228,13 +386,36 @@ setDeliveries((previous) =>
   <button
     type="button"
     onClick={() => handleShareLocation(order)}
-    disabled={sharingLocationId !== null}
+    disabled={sharingLocationId !== null || trackingOrderId !== null}
     className="mt-5 ml-3 rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
   >
     {sharingLocationId === order._id
       ? "Getting Location..."
       : "📍 Share My Location"}
   </button>
+)}
+
+{["picked_up", "in_transit"].includes(order.deliveryStatus) && (
+  <>
+    {trackingOrderId !== order._id ? (
+      <button
+        type="button"
+        onClick={() => handleStartTracking(order)}
+        disabled={trackingOrderId !== null}
+        className="mt-5 ml-3 rounded-lg bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
+      >
+        ▶️ Start Tracking
+      </button>
+    ) : (
+      <button
+        type="button"
+        onClick={handleStopTracking}
+        className="mt-5 ml-3 rounded-lg bg-red-700 px-5 py-3 font-semibold text-white hover:bg-red-800"
+      >
+        ⏹️ Stop Tracking
+      </button>
+    )}
+  </>
 )}
 
               {order.deliveryStatus === "delivered" && (
