@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const categories = [
   { name: "Vegetables", emoji: "🥬" },
@@ -10,6 +9,8 @@ const categories = [
 ];
 
 function Home() {
+
+  const navigate = useNavigate();
 
     const user = JSON.parse(sessionStorage.getItem("user") || "null");
 
@@ -21,13 +22,15 @@ const handleLogout = () => {
 
   const [search, setSearch] = useState("");
 
-  const handleSearch = (event) => {
-    event.preventDefault();
+ const handleSearch = (event) => {
+  event.preventDefault();
 
-    document
-      .getElementById("categories")
-      ?.scrollIntoView({ behavior: "smooth" });
-  };
+  if (user?.role === "buyer") {
+    navigate("/buyer/marketplace");
+  } else if (!user) {
+    navigate("/login");
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#f8faf6] text-gray-900">
@@ -38,17 +41,75 @@ const handleLogout = () => {
             🌾 FarmConnect
           </a>
 
-          <div className="hidden items-center gap-8 md:flex">
-            <a href="/" className="hover:text-green-700">
-              Home
-            </a>
-            <a href="#categories" className="hover:text-green-700">
-              Categories
-            </a>
-            <a href="#about" className="hover:text-green-700">
-              About
-            </a>
-          </div>
+      
+<div className="hidden items-center gap-6 md:flex">
+  <Link
+    to="/"
+    className="text-sm font-medium text-gray-700 hover:text-green-800"
+  >
+    Home
+  </Link>
+
+  {user?.role === "buyer" && (
+    <>
+      <Link
+        to="/buyer/marketplace"
+        className="text-sm font-medium text-gray-700 hover:text-green-800"
+      >
+        Marketplace
+      </Link>
+
+      <Link
+        to="/buyer/orders"
+        className="text-sm font-medium text-gray-700 hover:text-green-800"
+      >
+        My Orders
+      </Link>
+    </>
+  )}
+
+  {user?.role === "farmer" && (
+    <Link
+      to="/farmer/dashboard"
+      className="text-sm font-medium text-gray-700 hover:text-green-800"
+    >
+      Farmer Dashboard
+    </Link>
+  )}
+
+  {user?.role === "admin" && (
+    <Link
+      to="/admin/dashboard"
+      className="text-sm font-medium text-gray-700 hover:text-green-800"
+    >
+      Admin Dashboard
+    </Link>
+  )}
+
+  {user?.role === "deliveryAgent" && (
+    <Link
+      to="/delivery/dashboard"
+      className="text-sm font-medium text-gray-700 hover:text-green-800"
+    >
+      My Deliveries
+    </Link>
+  )}
+
+  <a
+    href="#categories"
+    className="text-sm font-medium text-gray-700 hover:text-green-800"
+  >
+    Categories
+  </a>
+
+  <a
+    href="#about"
+    className="text-sm font-medium text-gray-700 hover:text-green-800"
+  >
+    About
+  </a>
+</div>
+
 
           
 <div className="flex items-center gap-3">

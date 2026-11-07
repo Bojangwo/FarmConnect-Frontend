@@ -167,9 +167,8 @@ async function handleAssign(orderId) {
                     </td>
                     
 <td className="p-4">
-  {order.status === "ready_for_delivery" &&
-  (order.paymentStatus === "paid" ||
-    order.paymentMethod === "cod") &&
+ {order.status === "ready_for_delivery" &&
+  order.paymentStatus === "paid" &&
   ["not_assigned", "assigned", "failed"].includes(
     order.deliveryStatus
   ) ? (

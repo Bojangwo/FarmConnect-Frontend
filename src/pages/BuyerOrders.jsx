@@ -259,13 +259,20 @@ useEffect(() => {
           </div>
         )}
 
-        {!loading && !error && orders.length > 0 && (
-          <div className="space-y-5">
-            {orders.map((order) => (
-              <div
-                key={order._id}
-                className="rounded-xl bg-white p-6 shadow-sm"
-              >
+    {!loading && !error && orders.length > 0 && (
+  <div className="space-y-5">
+
+    {reviewSuccess && (
+      <p className="rounded-lg bg-green-100 p-4 text-green-800">
+        {reviewSuccess}
+      </p>
+    )}
+
+    {orders.map((order) => (
+      <div
+        key={order._id}
+        className="rounded-xl bg-white p-6 shadow-sm"
+      >
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                   <h2 className="text-lg font-bold text-green-800">
                     Order #{order.orderNumber || order._id.slice(-8)}
@@ -477,8 +484,22 @@ useEffect(() => {
                   </p>
                 )}
 
-                {order.status === "completed" &&
-  order.paymentStatus === "paid" && (
+                {(order.hasReviewed ||
+  reviewedOrderIds.includes(order._id)) && (
+  <div className="mt-4 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+    <p className="font-semibold text-yellow-800">
+      ⭐ Review Submitted
+    </p>
+    <p className="mt-1 text-sm text-gray-600">
+      Thank you for sharing your experience!
+    </p>
+  </div>
+)}
+
+   {order.status === "completed" &&
+  order.paymentStatus === "paid" &&
+  !order.hasReviewed &&
+  !reviewedOrderIds.includes(order._id) && (
     <div className="mt-4">
       <button
         type="button"

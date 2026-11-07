@@ -188,11 +188,10 @@ async function handleUpdateStatus(orderId, newStatus) {
     }[order.status] || []
     )
     .filter(
-      (action) =>
-        action.status === "cancelled" ||
-        order.paymentStatus === "paid" ||
-        order.paymentMethod === "cod"
-    )
+  (action) =>
+    action.status === "cancelled" ||
+    order.paymentStatus === "paid"
+)
     .map((action) => (
     <button
       key={action.status}

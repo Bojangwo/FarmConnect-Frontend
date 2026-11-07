@@ -65,12 +65,14 @@ function App() {
   path="/farmer/orders"
   element={<FarmerOrders />}
 />
-      </Route>
-      <Route path="/farmer/edit-product/:id" element={<EditProduct />} />
+
+    <Route path="/farmer/edit-product/:id" element={<EditProduct />} />
       <Route
   path="/farmer/purchase-requests"
   element={<FarmerPurchaseRequests />}
 />
+      </Route>
+  
     </Routes>
   );
 }
