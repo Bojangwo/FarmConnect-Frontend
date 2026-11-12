@@ -10,6 +10,8 @@ import DeliveryTrackingMap from "../components/DeliveryTrackingMap";
 import { getBuyerDeliveryLocation } from "../services/api";
 
 function BuyerOrders() {
+  const currentUser = JSON.parse(sessionStorage.getItem("user") || "null");
+  const isFarmer = currentUser?.role === "farmer";
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -79,7 +81,13 @@ useEffect(() => {
 
   async function loadOrders() {
     try {
-      const data = await getMyOrders();
+      const user = JSON.parse(
+  sessionStorage.getItem("user") || "null"
+);
+
+const data = await getMyOrders(
+  user?.role === "farmer" ? "purchases" : null
+);
 
       if (!active) return;
 
@@ -219,40 +227,49 @@ useEffect(() => {
   }
 
   return (
-    <div className="min-h-screen bg-green-50 p-6">
-      <div className="mx-auto max-w-5xl">
+    <div className="min-h-full bg-[#FAF9F4] px-4 py-7 sm:px-7 lg:px-10 lg:py-10">
+      <div className="mx-auto max-w-6xl">
         <Link
           to="/buyer/marketplace"
-          className="mb-6 inline-block text-green-700 hover:underline"
+          className="mb-6 inline-flex items-center text-sm font-medium text-[#477341] hover:text-[#194C35] hover:underline"
         >
           ← Back to Marketplace
         </Link>
 
-        <h1 className="mb-2 text-3xl font-bold text-green-800">
-          My Orders
-        </h1>
+        {isFarmer && (
+  <Link
+    to="/farmer/dashboard"
+    className="mb-6 ml-5 inline-flex items-center text-sm font-medium text-[#194C35] hover:underline"
+  >
+    ← Farmer Dashboard
+  </Link>
+)}
 
-        <p className="mb-8 text-gray-600">
+       <h1 className="mb-2 font-serif text-4xl font-semibold tracking-tight text-[#194C35] sm:text-5xl">
+  My Purchases
+</h1>
+
+        <p className="mb-8 text-sm leading-6 text-[#66766A] sm:text-base">
           Track your purchases and delivery progress.
         </p>
 
         {loading && <p>Loading your orders...</p>}
 
         {error && (
-          <p className="rounded-lg bg-red-100 p-4 text-red-700">
+          <p className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
             {error}
           </p>
         )}
 
         {!loading && !error && orders.length === 0 && (
-          <div className="rounded-xl bg-white p-8 text-center shadow-sm">
-            <p className="mb-4 text-gray-600">
-              You don't have any orders yet.
+          <div className="rounded-2xl border border-[#E1E8DC] bg-white p-10 text-center shadow-sm">
+            <p className="mb-4 text-[#66766A]">
+              You haven't made any purchases yet.
             </p>
 
             <Link
               to="/buyer/marketplace"
-              className="font-semibold text-green-700 hover:underline"
+              className="font-semibold text-[#194C35] hover:underline"
             >
               Browse Marketplace
             </Link>
@@ -260,10 +277,10 @@ useEffect(() => {
         )}
 
     {!loading && !error && orders.length > 0 && (
-  <div className="space-y-5">
+  <div className="space-y-6">
 
     {reviewSuccess && (
-      <p className="rounded-lg bg-green-100 p-4 text-green-800">
+      <p className="rounded-xl border border-[#C9E5CE] bg-[#F0FAF1] p-4 text-sm text-[#194C35]">
         {reviewSuccess}
       </p>
     )}
@@ -271,19 +288,19 @@ useEffect(() => {
     {orders.map((order) => (
       <div
         key={order._id}
-        className="rounded-xl bg-white p-6 shadow-sm"
+        className="overflow-hidden rounded-2xl border border-[#E1E8DC] bg-white p-5 shadow-sm sm:p-7"
       >
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="text-lg font-bold text-green-800">
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-[#EEF1EA] pb-5">
+                  <h2 className="break-all font-serif text-lg font-semibold text-[#194C35] sm:text-xl">
                     Order #{order.orderNumber || order._id.slice(-8)}
                   </h2>
 
-                  <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-800">
+                  <span className="rounded-full border border-[#D8E7D4] bg-[#E9F0E2] px-3 py-1 text-xs font-semibold text-[#194C35]">
                     {formatStatus(order.status)}
                   </span>
                 </div>
 
-                <div className="grid gap-3 text-gray-700 sm:grid-cols-2">
+                <div className="grid gap-x-8 gap-y-4 text-sm leading-6 text-[#43554A] sm:grid-cols-2 [&_strong]:font-semibold [&_strong]:text-[#183B2B]">
                   <p>
                     <strong>Product:</strong>{" "}
                     {order.product?.name || "Product"}
@@ -321,7 +338,7 @@ useEffect(() => {
 
 
 {order.paymentStatus === "pending" && (
-  <div className="mt-4 rounded-lg bg-yellow-50 p-4">
+  <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
     <p className="text-sm text-yellow-800">
       Your payment is being processed or verified.
       This page checks for updates automatically.
@@ -332,7 +349,7 @@ useEffect(() => {
 
 
 {order.paymentStatus === "paid" && (
-  <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4">
+  <div className="mt-6 rounded-xl border border-[#C9E5CE] bg-[#F0FAF1] p-4">
     <p className="font-semibold text-green-800">
       ✓ Payment Successful!
     </p>
@@ -346,7 +363,7 @@ useEffect(() => {
 
 
 {order.paymentStatus === "failed" && (
-  <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4">
+  <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4">
     <p className="font-semibold text-red-800">
       Payment Could Not Be Confirmed
     </p>
@@ -363,8 +380,8 @@ useEffect(() => {
                 
 {order.status === "pending" &&
   ["unpaid", "failed"].includes(order.paymentStatus) && (
-    <div className="mt-4 rounded-lg bg-blue-50 p-4">
-      <p className="mb-3 text-sm text-blue-800">
+    <div className="mt-6 rounded-xl border border-[#D9E5D5] bg-[#F4F7F0] p-5">
+      <p className="mb-3 text-sm text-[#43554A]">
         Complete your payment securely through ModemPay.
       </p>
 
@@ -372,7 +389,7 @@ useEffect(() => {
         type="button"
         onClick={() => handlePayNow(order._id)}
         disabled={payingId === order._id}
-        className="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
+        className="rounded-full bg-[#194C35] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#123D2B] disabled:cursor-not-allowed disabled:opacity-50"
       >
         {payingId === order._id ? "Preparing Payment..." : "Pay Now"}
       </button>
@@ -389,7 +406,7 @@ useEffect(() => {
             current === order._id ? null : order._id
           )
         }
-        className="rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800"
+        className="rounded-full bg-[#194C35] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#123D2B]"
       >
         {trackingOrderId === order._id
           ? "✕ Hide Delivery Tracking"
@@ -402,7 +419,7 @@ useEffect(() => {
 {order.deliveryStatus === "delivered" &&
   order.status === "ready_for_delivery" &&
   !order.buyerConfirmedDelivery && (
-    <div className="mt-4 rounded-lg bg-yellow-50 p-4">
+    <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
       <p className="mb-3 text-sm text-yellow-800">
         Your delivery has been marked as delivered.
         Please confirm only after receiving your products.
@@ -412,7 +429,7 @@ useEffect(() => {
         type="button"
         onClick={() => handleConfirmDelivery(order._id)}
         disabled={confirmingId === order._id}
-        className="rounded-lg bg-green-700 px-4 py-2 font-semibold text-white hover:bg-green-800 disabled:opacity-50"
+        className="rounded-full bg-[#194C35] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#123D2B] disabled:opacity-50"
       >
         {confirmingId === order._id
           ? "Confirming..."
@@ -423,7 +440,7 @@ useEffect(() => {
 
 
   {trackingOrderId === order._id && (
-  <div className="mt-4 space-y-3">
+  <div className="mt-6 space-y-3 rounded-xl border border-[#E1E8DC] bg-[#FAF9F4] p-4">
     {trackingLoading && (
       <p className="text-sm text-gray-600">
         Loading delivery location...
@@ -479,14 +496,14 @@ useEffect(() => {
 
 
                 {order.buyerConfirmedDelivery && (
-                  <p className="mt-4 rounded-lg bg-green-100 p-3 text-sm text-green-800">
+                  <p className="mt-6 rounded-xl border border-[#C9E5CE] bg-[#F0FAF1] p-4 text-sm text-[#194C35]">
                     Delivery confirmed. Thank you for shopping with FarmConnect!
                   </p>
                 )}
 
                 {(order.hasReviewed ||
   reviewedOrderIds.includes(order._id)) && (
-  <div className="mt-4 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+  <div className="mt-6 rounded-xl border border-[#E7DDBF] bg-[#FCF9EE] p-4">
     <p className="font-semibold text-yellow-800">
       ⭐ Review Submitted
     </p>
@@ -508,7 +525,7 @@ useEffect(() => {
             current === order._id ? null : order._id
           )
         }
-        className="rounded-lg bg-yellow-500 px-4 py-2 font-semibold text-white hover:bg-yellow-600"
+        className="rounded-full border border-[#D8E7D4] bg-[#E9F0E2] px-5 py-2.5 text-sm font-semibold text-[#194C35] transition hover:bg-[#D8E7D4]"
       >
         ⭐ {reviewingOrderId === order._id
           ? "Cancel Review"
@@ -521,8 +538,8 @@ useEffect(() => {
   order.status === "completed" &&
   order.paymentStatus === "paid" &&
   !reviewedOrderIds.includes(order._id) && (
-    <div className="mt-4 rounded-xl border border-yellow-200 bg-yellow-50 p-5">
-      <h3 className="mb-3 text-lg font-semibold text-gray-800">
+    <div className="mt-6 rounded-2xl border border-[#E1E8DC] bg-[#FAF9F4] p-5">
+      <h3 className="mb-3 font-serif text-xl font-semibold text-[#194C35]">
         Review {order.product?.name || "this product"}
       </h3>
 
@@ -555,7 +572,7 @@ useEffect(() => {
         maxLength={1000}
         rows={4}
         placeholder="Share your experience with this farmer and product..."
-        className="w-full rounded-lg border border-gray-300 p-3 focus:border-green-600 focus:outline-none"
+        className="w-full rounded-xl border border-[#D7E1D4] bg-white p-3 text-[#183B2B] outline-none focus:border-[#77975F] focus:ring-2 focus:ring-[#E9F0E2]"
       />
 
       <p className="mt-1 text-right text-xs text-gray-500">
@@ -566,7 +583,7 @@ useEffect(() => {
   type="button"
   onClick={() => handleSubmitReview(order._id)}
   disabled={submittingReview}
-  className="mt-3 rounded-lg bg-green-700 px-5 py-2 font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+  className="mt-3 rounded-full bg-[#194C35] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#123D2B] disabled:cursor-not-allowed disabled:opacity-50"
 >
   {submittingReview ? "Submitting..." : "Submit Review"}
 </button>

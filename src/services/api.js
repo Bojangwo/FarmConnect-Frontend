@@ -117,32 +117,36 @@ export async function createProduct(formData) {
 
 
 
+
+
 export async function updateProduct(productId, updates) {
   const token = sessionStorage.getItem("token");
+  const isFormData = updates instanceof FormData;
 
   const response = await fetch(
     `${API_BASE_URL}/products/${productId}`,
     {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
+        ...(isFormData
+          ? {}
+          : { "Content-Type": "application/json" }),
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(updates),
+      body: isFormData
+        ? updates
+        : JSON.stringify(updates),
     }
   );
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to update product"
-    );
+    throw new Error(data.message || "Failed to update product");
   }
 
   return data;
 }
-
 
 
 export async function deleteProduct(productId) {
@@ -222,15 +226,23 @@ export async function respondToPurchaseRequest(requestId, status) {
 
 
 
-export async function getMyOrders() {
+
+export async function getMyOrders(type = null) {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(`${API_BASE_URL}/orders`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const query = type
+    ? `?type=${encodeURIComponent(type)}`
+    : "";
+
+  const response = await fetch(
+    `${API_BASE_URL}/orders${query}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   const data = await response.json();
 
@@ -242,6 +254,7 @@ export async function getMyOrders() {
 
   return data;
 }
+
 
 export async function updateOrderStatus(orderId, status) {
   const token = sessionStorage.getItem("token");

@@ -146,10 +146,23 @@ function BuyerProductDetails() {
       return;
     }
 
-    if (user.role !== "buyer") {
-      setError("Only buyer accounts can submit purchase requests.");
-      return;
-    }
+    if (!["buyer", "farmer"].includes(user.role)) {
+  setError("Only buyer and farmer accounts can submit purchase requests.");
+  return;
+}
+
+const productFarmerId =
+  typeof product.farmer === "object"
+    ? product.farmer?._id
+    : product.farmer;
+
+if (
+  user.role === "farmer" &&
+  String(productFarmerId) === String(user._id || user.id)
+) {
+  setError("You cannot purchase your own product.");
+  return;
+}
 
     const quantity = Number(quantityRequested);
     const available = Number(

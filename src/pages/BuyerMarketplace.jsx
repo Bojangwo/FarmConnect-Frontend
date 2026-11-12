@@ -7,6 +7,39 @@ import {
 } from "../services/api";
 import { Link } from "react-router-dom";
 
+
+function ProductCard({ product, rating, imageUrl, formatPrice }) {
+  return (
+    <article className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-[#e2e8db] bg-white shadow-[0_12px_36px_rgba(7,39,24,0.13)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(7,39,24,0.19)]">
+      <Link to={`/buyer/products/${product._id}`} className="relative block h-52 overflow-hidden bg-[#e9eee2] sm:h-56">
+        {imageUrl ? (
+          <img src={imageUrl} alt={product.name} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" onError={(event) => { event.currentTarget.style.display = "none"; }} />
+        ) : (
+          <div className="flex h-full items-center justify-center px-4 text-center text-sm text-[#849585]">Product image unavailable</div>
+        )}
+        <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-[#194c35] shadow-sm">Farm fresh</span>
+      </Link>
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#77975f]">Local produce</p>
+        <h3 className="mt-2 font-serif text-2xl font-semibold leading-tight text-[#183b2b]">{product.name}</h3>
+        <p className="mt-2 text-sm text-[#6b796c]">By <span className="font-semibold text-[#356449]">{product.farmer?.name || "Local farmer"}</span></p>
+        <div className="mt-3 text-xs">
+          {rating?.totalReviews > 0 ? (
+            <span className="font-semibold text-[#a77728]">★ {rating.averageRating}/5 <span className="font-normal text-[#7b857b]">({rating.totalReviews} reviews)</span></span>
+          ) : <span className="text-[#8a948b]">No reviews yet</span>}
+        </div>
+        <div className="mt-auto pt-5">
+          <div className="flex items-end justify-between gap-2 border-t border-[#e9eee5] pt-4">
+            <p className="text-2xl font-bold text-[#194c35]">D{formatPrice(product.price)} <span className="text-sm font-normal text-[#7c897c]">/ {product.unit}</span></p>
+          </div>
+          <p className="mt-2 text-xs text-[#819083]">Available: {product.quantityAvailable ?? product.quantity ?? "Not specified"} {product.unit}</p>
+          <Link to={`/buyer/products/${product._id}`} className="mt-4 block rounded-full bg-[#194c35] px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-[#103725]">View product <span aria-hidden="true">↗</span></Link>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function BuyerMarketplace() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -153,302 +186,83 @@ function BuyerMarketplace() {
 
  
 return (
-  <div className="min-h-screen bg-[#FAF9F4] text-[#183B2B]">
-    {/* Premium hero */}
-    <section className="overflow-hidden bg-[#F0F2E8]">
-      <div className="mx-auto grid max-w-7xl lg:min-h-[590px] lg:grid-cols-2">
-        <div className="flex flex-col justify-center px-6 py-16 sm:px-10 lg:px-14 lg:py-24">
-          <div className="mb-6 flex items-center gap-3">
-            <span className="h-px w-10 bg-[#8DAA71]" />
-            <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#638151]">
-              Welcome to FarmConnect
-            </span>
-          </div>
-
-          <h1 className="max-w-xl font-serif text-5xl font-semibold leading-[1.12] tracking-tight sm:text-6xl xl:text-7xl">
-            Nature's finest,
-            <span className="block italic text-[#72945C]">
-              delivered fresh.
-            </span>
-          </h1>
-
-          <p className="mt-7 max-w-md text-base leading-8 text-[#657268]">
-            Fresh harvests, trusted local farmers, and a simpler
-            way to buy farm produce across The Gambia.
-          </p>
-
-          <div className="mt-9 flex flex-wrap items-center gap-5">
-            <a
-              href="#marketplace-products"
-              className="rounded-full bg-[#194C35] px-8 py-4 text-sm font-bold text-white transition hover:bg-[#103725]"
-            >
-              Shop Fresh Produce ↗
-            </a>
-            <span className="text-sm font-medium text-[#6A786A]">
-              Grown with care. Shared with you.
-            </span>
-          </div>
-
-          <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-[#D8DFD1] pt-6 text-sm text-[#4F6955]">
-            <span>✓ Local farmers</span>
-            <span>✓ Secure payments</span>
-            <span>✓ Delivery tracking</span>
-          </div>
+  <div className="min-h-screen bg-[#faf9f4] text-[#183b2b]">
+    {/* Full-width photo hero */}
+    <section className="relative isolate min-h-[610px] overflow-hidden bg-[#103323] sm:min-h-[690px] lg:min-h-[740px]">
+      <div className="absolute inset-0 bg-[url('/images/hero-produce.jpg')] bg-cover bg-center" aria-hidden="true" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#092c1f]/95 via-[#0b3425]/80 to-[#09291e]/40" aria-hidden="true" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#09291e]/80 via-transparent to-transparent" aria-hidden="true" />
+      <div className="relative mx-auto flex max-w-7xl flex-col px-6 pb-48 pt-20 sm:pb-52 sm:pt-24 lg:pt-28">
+        <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.24em] text-[#c6dcaa]">
+          <span className="h-px w-9 bg-[#c6dcaa]" /> The FarmConnect marketplace
         </div>
-
-        <div className="relative min-h-[340px] lg:min-h-full">
-          <img
-            src="/images/hero-produce.jpg"
-            alt="A colorful selection of freshly harvested vegetables"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-
-          <div className="absolute bottom-6 left-6 rounded-2xl bg-white/95 px-6 py-4 shadow-xl backdrop-blur-sm">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#72945C]">
-              Farm to table
-            </p>
-            <p className="mt-1 font-serif text-xl font-semibold text-[#194C35]">
-              Freshness starts here.
-            </p>
-          </div>
+        <h1 className="mt-7 max-w-3xl font-serif text-5xl font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
+          Fresh from the farm.<span className="block italic text-[#c9dfb2]">Made for your table.</span>
+        </h1>
+        <p className="mt-7 max-w-lg text-base leading-8 text-white/85 sm:text-lg">
+          Shop fresh produce directly from farmers across The Gambia. Discover local harvests, compare prices, and find what you need.
+        </p>
+        <div className="mt-9 flex flex-wrap items-center gap-4">
+          <a href="#marketplace-products" className="rounded-full bg-[#e4edda] px-7 py-3.5 text-sm font-bold text-[#194c35] transition hover:bg-white">Explore produce ↗</a>
+          <span className="text-sm text-white/80">Local farmers · Fresh harvests</span>
         </div>
       </div>
     </section>
 
-    {/* Marketplace */}
-    <main
-      id="marketplace-products"
-      className="mx-auto max-w-7xl px-6 py-16 lg:py-20"
-    >
-      <div className="mb-9 flex flex-wrap items-end justify-between gap-5">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#77975F]">
-            Handpicked for you
-          </p>
-          <h2 className="mt-3 font-serif text-4xl font-semibold sm:text-5xl">
-            Our Fresh Market
-          </h2>
-          <p className="mt-3 text-[#718073]">
-            Discover fresh produce from farmers across The Gambia.
-          </p>
-        </div>
-
-        {!loading && !error && (
-          <p className="rounded-full border border-[#DFE7D7] px-5 py-2 text-sm text-[#56735A]">
-            {filteredProducts.length} products
-          </p>
-        )}
+    <main id="marketplace-products" className="relative z-10 mx-auto -mt-36 max-w-7xl px-5 pb-20 sm:-mt-40 sm:px-6">
+      {/* Actual products overlap the hero, not decorative placeholders */}
+      <div className="mb-5 flex items-center justify-between gap-4 px-1 text-white">
+        <p className="text-xs font-bold uppercase tracking-[0.22em]">Fresh arrivals</p>
+        <span className="text-xs text-white/85">From Gambian farmers</span>
       </div>
-
-      {/* Search and filters */}
-      <div className="mb-10 grid gap-4 rounded-2xl border border-[#E5E9DE] bg-white p-5 shadow-sm md:grid-cols-[1fr_210px_190px]">
-        <input
-          type="search"
-          placeholder="Search products or farmers..."
-          aria-label="Search products or farmers"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-xl border border-[#E3E8DD] bg-[#FAFBF8] px-4 py-3.5 outline-none focus:border-[#72945C]"
-        />
-
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          aria-label="Filter by category"
-          className="rounded-xl border border-[#E3E8DD] bg-[#FAFBF8] px-4 py-3.5 outline-none"
-        >
-          <option value="">All Categories</option>
-          {categories.map((category) => (
-            <option key={category._id} value={category._id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          aria-label="Sort products"
-          className="rounded-xl border border-[#E3E8DD] bg-[#FAFBF8] px-4 py-3.5 outline-none"
-        >
-          <option value="newest">Newest First</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="name">Name: A to Z</option>
-        </select>
-      </div>
-
-      {error && (
-        <p role="alert" className="mb-8 rounded-xl bg-red-50 p-5 text-red-700">
-          {error}
-        </p>
-      )}
-
-      {loading && (
-        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <div key={index} className="animate-pulse overflow-hidden rounded-2xl bg-white">
-              <div className="h-64 bg-[#E4E9DE]" />
-              <div className="space-y-4 p-6">
-                <div className="h-5 w-3/4 rounded bg-gray-200" />
-                <div className="h-4 w-1/2 rounded bg-gray-100" />
-                <div className="h-10 rounded bg-gray-100" />
-              </div>
+      {loading ? (
+        <div className="grid gap-6 md:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="animate-pulse overflow-hidden rounded-[24px] bg-white shadow-xl">
+              <div className="h-52 bg-[#e3eadf]" /><div className="space-y-4 p-6"><div className="h-6 w-3/4 rounded bg-[#e3eadf]" /><div className="h-4 w-1/2 rounded bg-[#edf1ea]" /><div className="h-12 rounded bg-[#edf1ea]" /></div>
             </div>
           ))}
         </div>
-      )}
-
-      {!loading && !error && filteredProducts.length === 0 && (
-        <div className="rounded-3xl bg-white px-6 py-20 text-center">
-          <h3 className="font-serif text-3xl">Nothing in the basket yet</h3>
-          <p className="mt-3 text-gray-500">
-            Try another search or explore all categories.
-          </p>
-          <button
-            onClick={() => {
-              setSearch("");
-              setSelectedCategory("");
-            }}
-            className="mt-6 rounded-full bg-[#194C35] px-7 py-3 text-white"
-          >
-            Clear Filters
-          </button>
+      ) : error ? (
+        <div role="alert" className="rounded-2xl bg-white p-7 text-red-700 shadow-lg">{error}</div>
+      ) : filteredProducts.length > 0 ? (
+        <div className="grid gap-6 md:grid-cols-3">
+          {filteredProducts.slice(0, 3).map((product) => (
+            <ProductCard key={product._id} product={product} rating={farmerRatings[product.farmer?._id]} imageUrl={getProductImage(product)} formatPrice={formatPrice} />
+          ))}
         </div>
+      ) : (
+        <div className="rounded-2xl bg-white p-8 text-center shadow-lg"><p className="font-serif text-2xl">{products.length ? "No matching produce" : "No products available yet"}</p><p className="mt-2 text-sm text-[#6c796c]">{products.length ? "Try another search or category." : "Check back soon for fresh listings."}</p></div>
       )}
 
-      {!loading && !error && filteredProducts.length > 0 && (
-        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredProducts.map((product) => {
-            const rating = farmerRatings[product.farmer?._id];
-            const imageUrl = getProductImage(product);
+      {/* Filters remain connected to the original product data */}
+      <div className="mt-16 flex flex-wrap items-end justify-between gap-5 sm:mt-20">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#77975f]">Explore the harvest</p>
+          <h2 className="mt-3 font-serif text-4xl font-semibold sm:text-5xl">Our fresh market</h2>
+          <p className="mt-3 text-sm text-[#6d7c70]">Find produce from local farmers, all in one place.</p>
+        </div>
+        {!loading && !error && <span className="rounded-full border border-[#dfe7d7] px-4 py-2 text-sm text-[#56735a]">{filteredProducts.length} products</span>}
+      </div>
+      <div className="mt-8 grid gap-3 rounded-[22px] border border-[#e1e8db] bg-white p-4 shadow-sm md:grid-cols-[1fr_210px_190px]">
+        <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search products or farmers..." aria-label="Search products or farmers" className="min-w-0 rounded-xl border border-[#e1e8db] bg-[#fafbf8] px-4 py-3.5 outline-none focus:border-[#77975f]" />
+        <select value={selectedCategory} onChange={(event) => setSelectedCategory(event.target.value)} aria-label="Filter by category" className="min-w-0 rounded-xl border border-[#e1e8db] bg-[#fafbf8] px-4 py-3.5 outline-none focus:border-[#77975f]">
+          <option value="">All categories</option>
+          {categories.map((category) => <option key={category._id} value={category._id}>{category.name}</option>)}
+        </select>
+        <select value={sortBy} onChange={(event) => setSortBy(event.target.value)} aria-label="Sort products" className="min-w-0 rounded-xl border border-[#e1e8db] bg-[#fafbf8] px-4 py-3.5 outline-none focus:border-[#77975f]">
+          <option value="newest">Newest first</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A to Z</option>
+        </select>
+      </div>
 
-            return (
-              <article
-                key={product._id}
-                className="group flex flex-col overflow-hidden rounded-[22px] border border-[#E6EADF] bg-white transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-              >
-                <Link
-                  to={`/buyer/products/${product._id}`}
-                  className="relative block h-64 overflow-hidden bg-[#E9EEE2]"
-                >
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt={product.name}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-sm text-[#8A9A82]">
-                      Product image unavailable
-                    </div>
-                  )}
-
-                  <span className="absolute left-4 top-4 rounded-full bg-white/95 px-4 py-2 text-xs font-semibold text-[#245438] shadow-sm">
-                    Fresh produce
-                  </span>
-                </Link>
-
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className="font-serif text-2xl font-semibold">
-                    {product.name}
-                  </h3>
-
-                  <p className="mt-2 text-sm text-[#718073]">
-                    Grown by{" "}
-                    <span className="font-semibold text-[#386548]">
-                      {product.farmer?.name || "Local farmer"}
-                    </span>
-                  </p>
-
-                  <div className="mt-3 text-sm">
-                    {rating?.totalReviews > 0 ? (
-                      <p className="font-semibold text-[#C08A32]">
-                        ★ {rating.averageRating}/5
-                        <span className="ml-1 font-normal text-gray-500">
-                          ({rating.totalReviews} reviews)
-                        </span>
-                      </p>
-                    ) : (
-                      <p className="text-gray-400">No reviews yet</p>
-                    )}
-                  </div>
-
-                  <div className="mt-auto pt-6">
-                    <div className="border-t border-[#EDF0E8] pt-5">
-                      <p className="text-2xl font-bold text-[#1C603F]">
-                        D{formatPrice(product.price)}
-                        <span className="ml-1 text-sm font-normal text-gray-500">
-                          / {product.unit}
-                        </span>
-                      </p>
-                      <p className="mt-2 text-xs text-[#849087]">
-                        Available:{" "}
-                        {product.quantityAvailable ??
-                          product.quantity ??
-                          "Not specified"}{" "}
-                        {product.unit}
-                      </p>
-                    </div>
-
-                    <Link
-                      to={`/buyer/products/${product._id}`}
-                      className="mt-5 block rounded-full bg-[#194C35] px-5 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-[#103725]"
-                    >
-                      Explore Product ↗
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+      {!loading && !error && filteredProducts.length > 3 && (
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredProducts.slice(3).map((product) => (
+            <ProductCard key={product._id} product={product} rating={farmerRatings[product.farmer?._id]} imageUrl={getProductImage(product)} formatPrice={formatPrice} />
+          ))}
         </div>
       )}
     </main>
-
-    {/* Farmer storytelling section */}
-    <section className="bg-[#E8EEDF]">
-      <div className="mx-auto grid max-w-7xl lg:grid-cols-2">
-        <div className="relative min-h-[360px] lg:min-h-[500px]">
-          <img
-            src="/images/farmer-story.jpg"
-            alt="A farmer harvesting vegetables in a field"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-        </div>
-
-        <div className="flex flex-col justify-center px-8 py-16 sm:px-12 lg:px-16">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#77975F]">
-            Behind every harvest
-          </p>
-
-          <h2 className="mt-5 max-w-lg font-serif text-4xl font-semibold leading-tight sm:text-5xl">
-            More than produce.
-            <span className="block italic text-[#73935D]">
-              It's a connection.
-            </span>
-          </h2>
-
-          <p className="mt-7 max-w-lg leading-8 text-[#617365]">
-            Every harvest begins with a farmer's dedication.
-            FarmConnect brings farmers and buyers closer,
-            creating opportunities for local agriculture
-            to grow across The Gambia.
-          </p>
-
-          <a
-            href="#marketplace-products"
-            className="mt-8 w-fit border-b-2 border-[#194C35] pb-2 text-sm font-bold text-[#194C35]"
-          >
-            Discover Local Produce ↗
-          </a>
-        </div>
-      </div>
-    </section>
 
     <footer className="bg-[#143C2B] px-6 py-9 text-center text-sm text-white/70">
       <span className="font-serif text-xl font-semibold text-white">
@@ -460,7 +274,6 @@ return (
     </footer>
   </div>
 );
-
 }
 
 export default BuyerMarketplace;
