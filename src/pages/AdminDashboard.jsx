@@ -196,6 +196,14 @@ function AdminDashboard() {
             >
               Manage Orders
             </Link>
+
+            <Link
+  to="/admin/finances"
+  className="rounded-full border border-[#CBD8C4] bg-white px-5 py-3 text-sm font-semibold text-[#194C35] transition hover:bg-[#F2F6EE]"
+>
+  Manage Finances
+</Link>
+
           </div>
         </div>
 

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   getMarketplaceProducts,
@@ -209,34 +208,14 @@ return (
       </div>
     </section>
 
-    <main id="marketplace-products" className="relative z-10 mx-auto -mt-36 max-w-7xl px-5 pb-20 sm:-mt-40 sm:px-6">
-      {/* Actual products overlap the hero, not decorative placeholders */}
-      <div className="mb-5 flex items-center justify-between gap-4 px-1 text-white">
-        <p className="text-xs font-bold uppercase tracking-[0.22em]">Fresh arrivals</p>
-        <span className="text-xs text-white/85">From Gambian farmers</span>
-      </div>
-      {loading ? (
-        <div className="grid gap-6 md:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="animate-pulse overflow-hidden rounded-[24px] bg-white shadow-xl">
-              <div className="h-52 bg-[#e3eadf]" /><div className="space-y-4 p-6"><div className="h-6 w-3/4 rounded bg-[#e3eadf]" /><div className="h-4 w-1/2 rounded bg-[#edf1ea]" /><div className="h-12 rounded bg-[#edf1ea]" /></div>
-            </div>
-          ))}
-        </div>
-      ) : error ? (
-        <div role="alert" className="rounded-2xl bg-white p-7 text-red-700 shadow-lg">{error}</div>
-      ) : filteredProducts.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-3">
-          {filteredProducts.slice(0, 3).map((product) => (
-            <ProductCard key={product._id} product={product} rating={farmerRatings[product.farmer?._id]} imageUrl={getProductImage(product)} formatPrice={formatPrice} />
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-2xl bg-white p-8 text-center shadow-lg"><p className="font-serif text-2xl">{products.length ? "No matching produce" : "No products available yet"}</p><p className="mt-2 text-sm text-[#6c796c]">{products.length ? "Try another search or category." : "Check back soon for fresh listings."}</p></div>
-      )}
-
+    <main
+  id="marketplace-products"
+  className="relative z-10 mx-auto -mt-28 max-w-7xl px-5 pb-20 sm:-mt-36 sm:px-6 lg:-mt-40"
+>
       {/* Filters remain connected to the original product data */}
-      <div className="mt-16 flex flex-wrap items-end justify-between gap-5 sm:mt-20">
+
+      <div className="rounded-[28px] border border-[#E1E8DB] bg-[#FAF9F4] p-5 shadow-xl sm:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#77975f]">Explore the harvest</p>
           <h2 className="mt-3 font-serif text-4xl font-semibold sm:text-5xl">Our fresh market</h2>
@@ -254,12 +233,35 @@ return (
           <option value="newest">Newest first</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A to Z</option>
         </select>
       </div>
+      </div>
 
-      {!loading && !error && filteredProducts.length > 3 && (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredProducts.slice(3).map((product) => (
-            <ProductCard key={product._id} product={product} rating={farmerRatings[product.farmer?._id]} imageUrl={getProductImage(product)} formatPrice={formatPrice} />
+      {loading ? (
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="animate-pulse overflow-hidden rounded-[24px] bg-white shadow-xl">
+              <div className="h-52 bg-[#e3eadf]" />
+              <div className="space-y-4 p-6"><div className="h-6 w-3/4 rounded bg-[#e3eadf]" /><div className="h-4 w-1/2 rounded bg-[#edf1ea]" /><div className="h-12 rounded bg-[#edf1ea]" /></div>
+            </div>
           ))}
+        </div>
+      ) : error ? (
+        <div role="alert" className="mt-8 rounded-2xl bg-white p-7 text-red-700 shadow-lg">{error}</div>
+      ) : filteredProducts.length > 0 ? (
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredProducts.map((product) => (
+            <ProductCard
+              key={product._id}
+              product={product}
+              rating={farmerRatings[product.farmer?._id]}
+              imageUrl={getProductImage(product)}
+              formatPrice={formatPrice}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-8 rounded-2xl bg-white p-8 text-center shadow-sm">
+          <p className="font-serif text-2xl">{products.length ? "No matching produce" : "No products available yet"}</p>
+          <p className="mt-2 text-sm text-[#6c796c]">{products.length ? "Try another search or category." : "Check back soon for fresh listings."}</p>
         </div>
       )}
     </main>

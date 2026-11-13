@@ -16,6 +16,8 @@ import DeliveryAgentDashboard from "./pages/DeliveryAgentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminCategories from "./pages/AdminCategories";
 import AdminOrders from "./pages/AdminOrders";
+import AdminFinances from "./pages/AdminFinances";
+import MyEarnings from "./pages/MyEarnings";
 
 export default function App() {
   return (
@@ -39,18 +41,25 @@ export default function App() {
           <Route path="/farmer/edit-product/:id" element={<EditProduct />} />
           <Route path="/farmer/purchase-requests" element={<FarmerPurchaseRequests />} />
           <Route path="/farmer/orders" element={<FarmerOrders />} />
+          <Route path="/farmer/earnings" element={<MyEarnings />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/categories" element={<AdminCategories />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route
+  path="/admin/finances"
+  element={<AdminFinances />}
+/>
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={["deliveryAgent"]} />}>
           <Route path="/delivery/dashboard" element={<DeliveryAgentDashboard />} />
+          <Route path="/delivery/earnings" element={<MyEarnings />} />
         </Route>
       </Route>
+      
     </Routes>
   );
 }

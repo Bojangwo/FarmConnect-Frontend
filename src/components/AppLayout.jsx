@@ -14,14 +14,19 @@ const NAV_BY_ROLE = {
     { label: "Add Product", to: "/farmer/add-product", icon: "plus" },
     { label: "Purchase Requests", to: "/farmer/purchase-requests", icon: "requests" },
     { label: "Sales Orders", to: "/farmer/orders", icon: "orders" },
+    {label: "My Earnings",to: "/farmer/earnings",icon: "wallet",},
   ],
-  admin: [
-    { label: "Admin Dashboard", to: "/admin/dashboard", icon: "dashboard" },
-    { label: "Categories", to: "/admin/categories", icon: "box" },
-    { label: "Manage Orders", to: "/admin/orders", icon: "orders" },
-  ],
+  
+admin: [
+  { label: "Admin Dashboard", to: "/admin/dashboard", icon: "dashboard" },
+  { label: "Categories", to: "/admin/categories", icon: "box" },
+  { label: "Manage Orders", to: "/admin/orders", icon: "orders" },
+  { label: "Manage Finances", to: "/admin/finances", icon: "wallet" },
+],
+
   deliveryAgent: [
     { label: "My Deliveries", to: "/delivery/dashboard", icon: "truck" },
+    {label: "My Earnings", to: "/delivery/earnings",icon: "wallet",},
   ],
 };
 
@@ -36,6 +41,16 @@ function NavIcon({ name, size = 20 }) {
     plus: <><path d="M12 5v14M5 12h14"/><circle cx="12" cy="12" r="10"/></>,
     requests: <><path d="M8 4h11v16H5V7l3-3Z"/><path d="M8 4v3H5M9 12h7M9 16h7"/></>,
     orders: <><path d="M5 3h14v18l-3-2-4 2-4-2-3 2V3ZM9 8h6M9 12h6"/></>,
+    
+wallet: (
+  <>
+    <rect x="3" y="6" width="18" height="15" rx="2" />
+    <path d="M3 10h18M7 6V4a2 2 0 0 1 2-2h9" />
+    <path d="M15 14h6v4h-6a2 2 0 0 1 0-4Z" />
+    <circle cx="17" cy="16" r="0.5" fill="currentColor" stroke="none" />
+  </>
+),
+
     truck: <><path d="M3 6h12v11H3zM15 10h4l3 4v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></>,
     menu: <path d="M4 7h16M4 12h16M4 17h16"/>,
     close: <path d="M5 5l14 14M19 5 5 19"/>,

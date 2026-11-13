@@ -116,9 +116,6 @@ export async function createProduct(formData) {
 }
 
 
-
-
-
 export async function updateProduct(productId, updates) {
   const token = sessionStorage.getItem("token");
   const isFormData = updates instanceof FormData;
@@ -784,6 +781,104 @@ export async function getFarmerReviews(farmerId) {
   if (!response.ok) {
     throw new Error(
       data.message || "Failed to fetch farmer reviews"
+    );
+  }
+
+  return data;
+}
+
+
+// Append these exports to your existing src/services/api.js.
+// They use the API_BASE_URL already declared at the top of that file.
+async function adminFinanceRequest(path, options = {}) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.headers || {}),
+    },
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.message || `Request failed (${response.status})`);
+  return data;
+}
+
+export const getAdminFinances = () => adminFinanceRequest("/admin/finances");
+export const getAdminPaymentSettings = () => adminFinanceRequest("/admin/payment-settings");
+export const updateAdminPaymentSettings = (settings) => adminFinanceRequest("/admin/payment-settings", { method: "PATCH", body: JSON.stringify(settings) });
+export const prepareAdminPayouts = (orderId) => adminFinanceRequest(`/admin/orders/${encodeURIComponent(orderId)}/prepare-payouts`, { method: "POST" });
+export const recordAdminPayout = (payoutId, details) => adminFinanceRequest(`/admin/payouts/${encodeURIComponent(payoutId)}/mark-paid`, { method: "PATCH", body: JSON.stringify(details) });
+
+
+
+export async function getMyEarnings() {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/earnings/me`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to load earnings"
+    );
+  }
+
+  return data;
+}
+
+export async function getMyPayoutDetails() {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/payout-details/me`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to load payout details"
+    );
+  }
+
+  return data;
+}
+
+export async function updateMyPayoutDetails(details) {
+  const token = sessionStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/payout-details/me`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(details),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to save payout details"
     );
   }
 
