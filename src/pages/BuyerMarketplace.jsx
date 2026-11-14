@@ -208,35 +208,10 @@ return (
       </div>
     </section>
 
-    <main
-  id="marketplace-products"
-  className="relative z-10 mx-auto -mt-28 max-w-7xl px-5 pb-20 sm:-mt-36 sm:px-6 lg:-mt-40"
->
-      {/* Filters remain connected to the original product data */}
-
-      <div className="rounded-[28px] border border-[#E1E8DB] bg-[#FAF9F4] p-5 shadow-xl sm:p-8">
-      <div className="flex flex-wrap items-end justify-between gap-5">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#77975f]">Explore the harvest</p>
-          <h2 className="mt-3 font-serif text-4xl font-semibold sm:text-5xl">Our fresh market</h2>
-          <p className="mt-3 text-sm text-[#6d7c70]">Find produce from local farmers, all in one place.</p>
-        </div>
-        {!loading && !error && <span className="rounded-full border border-[#dfe7d7] px-4 py-2 text-sm text-[#56735a]">{filteredProducts.length} products</span>}
-      </div>
-      <div className="mt-8 grid gap-3 rounded-[22px] border border-[#e1e8db] bg-white p-4 shadow-sm md:grid-cols-[1fr_210px_190px]">
-        <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search products or farmers..." aria-label="Search products or farmers" className="min-w-0 rounded-xl border border-[#e1e8db] bg-[#fafbf8] px-4 py-3.5 outline-none focus:border-[#77975f]" />
-        <select value={selectedCategory} onChange={(event) => setSelectedCategory(event.target.value)} aria-label="Filter by category" className="min-w-0 rounded-xl border border-[#e1e8db] bg-[#fafbf8] px-4 py-3.5 outline-none focus:border-[#77975f]">
-          <option value="">All categories</option>
-          {categories.map((category) => <option key={category._id} value={category._id}>{category.name}</option>)}
-        </select>
-        <select value={sortBy} onChange={(event) => setSortBy(event.target.value)} aria-label="Sort products" className="min-w-0 rounded-xl border border-[#e1e8db] bg-[#fafbf8] px-4 py-3.5 outline-none focus:border-[#77975f]">
-          <option value="newest">Newest first</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A to Z</option>
-        </select>
-      </div>
-      </div>
-
+    {/* Product cards themselves overlap the hero, not the search panel. */}
+    <main id="marketplace-products" className="relative z-10 mx-auto -mt-28 max-w-7xl px-5 pb-36 sm:-mt-36 sm:px-6 lg:-mt-40">
       {loading ? (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, index) => (
             <div key={index} className="animate-pulse overflow-hidden rounded-[24px] bg-white shadow-xl">
               <div className="h-52 bg-[#e3eadf]" />
@@ -245,9 +220,9 @@ return (
           ))}
         </div>
       ) : error ? (
-        <div role="alert" className="mt-8 rounded-2xl bg-white p-7 text-red-700 shadow-lg">{error}</div>
+        <div role="alert" className="rounded-2xl bg-white p-7 text-red-700 shadow-lg">{error}</div>
       ) : filteredProducts.length > 0 ? (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredProducts.map((product) => (
             <ProductCard
               key={product._id}
@@ -259,12 +234,35 @@ return (
           ))}
         </div>
       ) : (
-        <div className="mt-8 rounded-2xl bg-white p-8 text-center shadow-sm">
+        <div className="rounded-2xl bg-white p-8 text-center shadow-lg">
           <p className="font-serif text-2xl">{products.length ? "No matching produce" : "No products available yet"}</p>
           <p className="mt-2 text-sm text-[#6c796c]">{products.length ? "Try another search or category." : "Check back soon for fresh listings."}</p>
         </div>
       )}
+      <div className="mt-12 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#77975f]">Explore the harvest</p>
+          <h2 className="mt-2 font-serif text-3xl font-semibold sm:text-4xl">Our fresh market</h2>
+          <p className="mt-2 text-sm text-[#6d7c70]">Find produce from local farmers, all in one place.</p>
+        </div>
+        {!loading && !error && <span className="rounded-full border border-[#dfe7d7] px-4 py-2 text-sm text-[#56735a]">{filteredProducts.length} products</span>}
+      </div>
     </main>
+
+    {/* Filters appear after the product grid in document order, but stay accessible
+        at the bottom of the viewport while buyers scroll. */}
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#dfe7d7] bg-[#faf9f4]/95 px-3 py-3 shadow-[0_-10px_35px_rgba(7,39,24,0.12)] backdrop-blur-md sm:px-6">
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-2 sm:grid-cols-[minmax(0,1fr)_190px_180px] sm:gap-3">
+        <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search products or farmers..." aria-label="Search products or farmers" className="col-span-2 min-w-0 rounded-xl border border-[#dbe5d6] bg-white px-4 py-3 text-sm outline-none focus:border-[#77975f] sm:col-span-1" />
+        <select value={selectedCategory} onChange={(event) => setSelectedCategory(event.target.value)} aria-label="Filter by category" className="min-w-0 rounded-xl border border-[#dbe5d6] bg-white px-3 py-3 text-sm outline-none focus:border-[#77975f]">
+          <option value="">All categories</option>
+          {categories.map((category) => <option key={category._id} value={category._id}>{category.name}</option>)}
+        </select>
+        <select value={sortBy} onChange={(event) => setSortBy(event.target.value)} aria-label="Sort products" className="min-w-0 rounded-xl border border-[#dbe5d6] bg-white px-3 py-3 text-sm outline-none focus:border-[#77975f]">
+          <option value="newest">Newest first</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A to Z</option>
+        </select>
+      </div>
+    </div>
 
     <footer className="bg-[#143C2B] px-6 py-9 text-center text-sm text-white/70">
       <span className="font-serif text-xl font-semibold text-white">

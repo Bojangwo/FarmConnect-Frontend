@@ -15,6 +15,7 @@ const NAV_BY_ROLE = {
     { label: "Purchase Requests", to: "/farmer/purchase-requests", icon: "requests" },
     { label: "Sales Orders", to: "/farmer/orders", icon: "orders" },
     {label: "My Earnings",to: "/farmer/earnings",icon: "wallet",},
+    {label: "Reports", to: "/farmer/reports", icon: "reports",}
   ],
   
 admin: [
@@ -22,11 +23,12 @@ admin: [
   { label: "Categories", to: "/admin/categories", icon: "box" },
   { label: "Manage Orders", to: "/admin/orders", icon: "orders" },
   { label: "Manage Finances", to: "/admin/finances", icon: "wallet" },
+  { label: "Reports", to: "/admin/reports", icon: "reports" },
 ],
 
   deliveryAgent: [
     { label: "My Deliveries", to: "/delivery/dashboard", icon: "truck" },
-    {label: "My Earnings", to: "/delivery/earnings",icon: "wallet",},
+    {label: "Reports", to: "/delivery/reports", icon: "reports",}
   ],
 };
 
@@ -50,6 +52,15 @@ wallet: (
     <circle cx="17" cy="16" r="0.5" fill="currentColor" stroke="none" />
   </>
 ),
+
+
+reports: (
+  <>
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <path d="M7 17v-5M12 17V7M17 17v-8" />
+  </>
+),
+
 
     truck: <><path d="M3 6h12v11H3zM15 10h4l3 4v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></>,
     menu: <path d="M4 7h16M4 12h16M4 17h16"/>,

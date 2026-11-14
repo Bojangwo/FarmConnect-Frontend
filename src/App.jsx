@@ -18,6 +18,9 @@ import AdminCategories from "./pages/AdminCategories";
 import AdminOrders from "./pages/AdminOrders";
 import AdminFinances from "./pages/AdminFinances";
 import MyEarnings from "./pages/MyEarnings";
+import AdminReports from "./pages/AdminReports";
+import RoleReports from './pages/RoleReports';
+
 
 export default function App() {
   return (
@@ -42,12 +45,14 @@ export default function App() {
           <Route path="/farmer/purchase-requests" element={<FarmerPurchaseRequests />} />
           <Route path="/farmer/orders" element={<FarmerOrders />} />
           <Route path="/farmer/earnings" element={<MyEarnings />} />
+          <Route path='/farmer/reports' element={<RoleReports role='farmer' />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/categories" element={<AdminCategories />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/reports" element={<AdminReports />} />
           <Route
   path="/admin/finances"
   element={<AdminFinances />}
@@ -58,6 +63,8 @@ export default function App() {
           <Route path="/delivery/dashboard" element={<DeliveryAgentDashboard />} />
           <Route path="/delivery/earnings" element={<MyEarnings />} />
         </Route>
+         <Route path='/delivery/reports' element={<RoleReports role='delivery' />} />
+
       </Route>
       
     </Routes>

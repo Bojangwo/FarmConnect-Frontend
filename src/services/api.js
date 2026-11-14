@@ -884,3 +884,22 @@ export async function updateMyPayoutDetails(details) {
 
   return data;
 }
+
+
+  export async function getFarmerReport(filters = {}) {
+     return roleReportRequest('farmer', filters);
+   }
+   export async function getDeliveryReport(filters = {}) {
+     return roleReportRequest('delivery', filters);
+   }
+   async function roleReportRequest(role, filters) {
+     const query = new URLSearchParams();
+     if (filters.startDate) query.set('startDate', filters.startDate);
+     if (filters.endDate) query.set('endDate', filters.endDate);
+     const response = await fetch(`${API_BASE_URL}/reports/${role}${query.size ? `?${query}` : ''}`, {
+       headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
+     });
+     const data = await response.json().catch(() => ({}));
+     if (!response.ok) throw new Error(data.message || 'Could not load report');
+     return data;
+   }
