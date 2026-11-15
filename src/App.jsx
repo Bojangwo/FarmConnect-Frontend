@@ -19,7 +19,9 @@ import AdminOrders from "./pages/AdminOrders";
 import AdminFinances from "./pages/AdminFinances";
 import MyEarnings from "./pages/MyEarnings";
 import AdminReports from "./pages/AdminReports";
+import AdminProducts from "./pages/AdminProducts";
 import RoleReports from './pages/RoleReports';
+import AdminAuditLogs from "./pages/AdminAuditLogs";
 
 
 export default function App() {
@@ -57,6 +59,8 @@ export default function App() {
   path="/admin/finances"
   element={<AdminFinances />}
 />
+<Route path="/admin/products" element={<AdminProducts />} />
+<Route path="/admin/audit-logs" element={<AdminAuditLogs />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={["deliveryAgent"]} />}>

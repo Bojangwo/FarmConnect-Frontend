@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import NotificationBell from "./NotificationBell";
 
 const NAV_BY_ROLE = {
   buyer: [
@@ -18,13 +19,17 @@ const NAV_BY_ROLE = {
     {label: "Reports", to: "/farmer/reports", icon: "reports",}
   ],
   
+
 admin: [
   { label: "Admin Dashboard", to: "/admin/dashboard", icon: "dashboard" },
   { label: "Categories", to: "/admin/categories", icon: "box" },
+  { label: "Manage Products", to: "/admin/products", icon: "box" },
   { label: "Manage Orders", to: "/admin/orders", icon: "orders" },
   { label: "Manage Finances", to: "/admin/finances", icon: "wallet" },
   { label: "Reports", to: "/admin/reports", icon: "reports" },
+  { label: "Audit Logs", to: "/admin/audit-logs", icon: "requests" },
 ],
+
 
   deliveryAgent: [
     { label: "My Deliveries", to: "/delivery/dashboard", icon: "truck" },
@@ -144,7 +149,19 @@ export default function AppLayout() {
           <button type="button" className="rounded-lg p-2 text-[#194C35] hover:bg-[#EAF0E5] lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu" aria-expanded={mobileOpen}><NavIcon name="menu"/></button>
           <div><p className="text-xs font-medium text-[#79907D]">Your workspace</p><h2 className="font-serif text-xl font-semibold text-[#194C35]">{pageLabel}</h2></div>
         </div>
-        <div className="flex items-center gap-3"><span className="hidden text-sm text-[#6B7E70] sm:block">Welcome, {user.name?.split(" ")[0] || "there"}</span><span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E7F0DC] text-xs font-bold text-[#194C35]">{initials}</span></div>
+       
+<div className="flex items-center gap-3">
+  <span className="hidden text-sm text-[#6B7E70] sm:block">
+    Welcome, {user.name?.split(" ")[0] || "there"}
+  </span>
+
+  <NotificationBell />
+
+  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E7F0DC] text-xs font-bold text-[#194C35]">
+    {initials}
+  </span>
+</div>
+
       </header>
       <main id="main-content" className="min-w-0"><Outlet /></main>
     </div>

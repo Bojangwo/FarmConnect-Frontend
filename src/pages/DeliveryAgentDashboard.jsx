@@ -31,6 +31,8 @@ const [trackingOrderId, setTrackingOrderId] = useState(null);
 // Store the browser's active GPS watcher.
 const watchIdRef = useRef(null);
 
+const trackingStartedAtRef = useRef(null);
+
 const lastLocationUpdateRef = useRef(0);
 const locationRequestInProgressRef = useRef(false);
 const trackingSessionRef = useRef(0);
@@ -175,6 +177,7 @@ function handleStartTracking(order) {
 
   trackingOrderIdRef.current = order._id;
   setTrackingOrderId(order._id);
+  trackingStartedAtRef.current = Date.now();
 
   lastLocationUpdateRef.current = 0;
 locationRequestInProgressRef.current = false;
@@ -273,6 +276,7 @@ function handleStopTracking() {
   trackingSessionRef.current += 1;
   // Prevent any more location updates for this order.
   trackingOrderIdRef.current = null;
+  trackingStartedAtRef.current = null;
 
   // Stop watching the device's GPS location.
   if (watchIdRef.current !== null) {

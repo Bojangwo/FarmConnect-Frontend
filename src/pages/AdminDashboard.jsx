@@ -204,6 +204,20 @@ function AdminDashboard() {
   Manage Finances
 </Link>
 
+<Link
+  to="/admin/products"
+  className="rounded-full border border-[#CBD8C4] bg-white px-5 py-3 text-sm font-semibold text-[#194C35] transition hover:bg-[#F2F6EE]"
+>
+  Manage Products
+</Link>
+
+<Link
+  to="/admin/audit-logs"
+  className="rounded-full border border-[#CBD8C4] bg-white px-5 py-3 text-sm font-semibold text-[#194C35] transition hover:bg-[#F2F6EE]"
+>
+  Audit Logs
+</Link>
+
           </div>
         </div>
 

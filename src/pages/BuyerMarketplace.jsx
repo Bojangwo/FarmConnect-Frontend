@@ -7,37 +7,95 @@ import {
 import { Link } from "react-router-dom";
 
 
+
 function ProductCard({ product, rating, imageUrl, formatPrice }) {
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-[#e2e8db] bg-white shadow-[0_12px_36px_rgba(7,39,24,0.13)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(7,39,24,0.19)]">
-      <Link to={`/buyer/products/${product._id}`} className="relative block h-52 overflow-hidden bg-[#e9eee2] sm:h-56">
+    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-[#e2e8db] bg-white shadow-[0_8px_24px_rgba(7,39,24,0.11)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_15px_30px_rgba(7,39,24,0.17)]">
+
+      {/* Product image */}
+      <Link
+        to={`/buyer/products/${product._id}`}
+        className="relative block aspect-square overflow-hidden bg-[#e9eee2]"
+      >
         {imageUrl ? (
-          <img src={imageUrl} alt={product.name} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" onError={(event) => { event.currentTarget.style.display = "none"; }} />
+          <img
+            src={imageUrl}
+            alt={product.name}
+            loading="lazy"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+            }}
+          />
         ) : (
-          <div className="flex h-full items-center justify-center px-4 text-center text-sm text-[#849585]">Product image unavailable</div>
-        )}
-        <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-[#194c35] shadow-sm">Farm fresh</span>
-      </Link>
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#77975f]">Local produce</p>
-        <h3 className="mt-2 font-serif text-2xl font-semibold leading-tight text-[#183b2b]">{product.name}</h3>
-        <p className="mt-2 text-sm text-[#6b796c]">By <span className="font-semibold text-[#356449]">{product.farmer?.name || "Local farmer"}</span></p>
-        <div className="mt-3 text-xs">
-          {rating?.totalReviews > 0 ? (
-            <span className="font-semibold text-[#a77728]">★ {rating.averageRating}/5 <span className="font-normal text-[#7b857b]">({rating.totalReviews} reviews)</span></span>
-          ) : <span className="text-[#8a948b]">No reviews yet</span>}
-        </div>
-        <div className="mt-auto pt-5">
-          <div className="flex items-end justify-between gap-2 border-t border-[#e9eee5] pt-4">
-            <p className="text-2xl font-bold text-[#194c35]">D{formatPrice(product.price)} <span className="text-sm font-normal text-[#7c897c]">/ {product.unit}</span></p>
+          <div className="flex h-full items-center justify-center px-2 text-center text-xs text-[#849585]">
+            Product image unavailable
           </div>
-          <p className="mt-2 text-xs text-[#819083]">Available: {product.quantityAvailable ?? product.quantity ?? "Not specified"} {product.unit}</p>
-          <Link to={`/buyer/products/${product._id}`} className="mt-4 block rounded-full bg-[#194c35] px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-[#103725]">View product <span aria-hidden="true">↗</span></Link>
+        )}
+
+        <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-1 text-[9px] font-semibold text-[#194c35] shadow-sm sm:text-[10px]">
+          Farm fresh
+        </span>
+      </Link>
+
+      {/* Product information */}
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
+
+        <h3 className="line-clamp-2 min-h-[2.5rem] font-serif text-sm font-semibold leading-5 text-[#183b2b] sm:text-base">
+          {product.name}
+        </h3>
+
+        <p className="mt-1 truncate text-[11px] text-[#6b796c] sm:text-xs">
+          By{" "}
+          <span className="font-semibold text-[#356449]">
+            {product.farmer?.name || "Local farmer"}
+          </span>
+        </p>
+
+        <div className="mt-2 text-[11px]">
+          {rating?.totalReviews > 0 ? (
+            <span className="font-semibold text-[#a77728]">
+              ★ {rating.averageRating}/5
+              <span className="ml-1 font-normal text-[#7b857b]">
+                ({rating.totalReviews})
+              </span>
+            </span>
+          ) : (
+            <span className="text-[#8a948b]">
+              No reviews yet
+            </span>
+          )}
+        </div>
+
+        <div className="mt-auto pt-3">
+
+          <p className="break-words text-base font-bold text-[#194c35] sm:text-lg">
+            D{formatPrice(product.price)}
+            <span className="ml-1 text-[11px] font-normal text-[#7c897c]">
+              / {product.unit}
+            </span>
+          </p>
+
+          <p className="mt-1 line-clamp-1 text-[10px] text-[#819083] sm:text-xs">
+            Available:{" "}
+            {product.quantityAvailable ??
+              product.quantity ??
+              "Not specified"}{" "}
+            {product.unit}
+          </p>
+
+          <Link
+            to={`/buyer/products/${product._id}`}
+            className="mt-3 block rounded-full bg-[#194c35] px-2 py-2.5 text-center text-xs font-semibold text-white transition hover:bg-[#103725] sm:text-sm"
+          >
+            View product
+          </Link>
         </div>
       </div>
     </article>
   );
 }
+
 
 function BuyerMarketplace() {
   const [products, setProducts] = useState([]);
@@ -211,8 +269,8 @@ return (
     {/* Product cards themselves overlap the hero, not the search panel. */}
     <main id="marketplace-products" className="relative z-10 mx-auto -mt-28 max-w-7xl px-5 pb-36 sm:-mt-36 sm:px-6 lg:-mt-40">
       {loading ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, index) => (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
+          {Array.from({ length: 5 }).map((_, index) => (
             <div key={index} className="animate-pulse overflow-hidden rounded-[24px] bg-white shadow-xl">
               <div className="h-52 bg-[#e3eadf]" />
               <div className="space-y-4 p-6"><div className="h-6 w-3/4 rounded bg-[#e3eadf]" /><div className="h-4 w-1/2 rounded bg-[#edf1ea]" /><div className="h-12 rounded bg-[#edf1ea]" /></div>
@@ -222,7 +280,7 @@ return (
       ) : error ? (
         <div role="alert" className="rounded-2xl bg-white p-7 text-red-700 shadow-lg">{error}</div>
       ) : filteredProducts.length > 0 ? (
-        <div className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid auto-rows-fr grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
           {filteredProducts.map((product) => (
             <ProductCard
               key={product._id}
