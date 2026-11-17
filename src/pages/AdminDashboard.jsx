@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllUsers, updateUserStatus } from "../services/api";
@@ -19,17 +18,13 @@ const statusStyles = {
 function StatCard({ label, value, description }) {
   return (
     <div className="rounded-2xl border border-[#E1E8DC] bg-white p-6 shadow-sm">
-      <p className="text-xs font-medium text-[#718073]">
-        {label}
-      </p>
+      <p className="text-xs font-medium text-[#718073]">{label}</p>
 
       <p className="mt-3 font-serif text-4xl font-semibold text-[#194C35]">
         {value}
       </p>
 
-      <p className="mt-2 text-xs text-[#8A968A]">
-        {description}
-      </p>
+      <p className="mt-2 text-xs text-[#8A968A]">{description}</p>
     </div>
   );
 }
@@ -76,18 +71,11 @@ function AdminDashboard() {
   const stats = useMemo(() => {
     return {
       total: users.length,
-      farmers: users.filter(
-        (user) => user.role === "farmer"
-      ).length,
-      buyers: users.filter(
-        (user) => user.role === "buyer"
-      ).length,
-      deliveryAgents: users.filter(
-        (user) => user.role === "deliveryAgent"
-      ).length,
-      active: users.filter(
-        (user) => user.status === "active"
-      ).length,
+      farmers: users.filter((user) => user.role === "farmer").length,
+      buyers: users.filter((user) => user.role === "buyer").length,
+      deliveryAgents: users.filter((user) => user.role === "deliveryAgent")
+        .length,
+      active: users.filter((user) => user.status === "active").length,
     };
   }, [users]);
 
@@ -101,22 +89,17 @@ function AdminDashboard() {
         user.email?.toLowerCase().includes(term) ||
         user.phone?.toLowerCase().includes(term);
 
-      const matchesRole =
-        roleFilter === "all" ||
-        user.role === roleFilter;
+      const matchesRole = roleFilter === "all" || user.role === roleFilter;
 
       const matchesStatus =
-        statusFilter === "all" ||
-        user.status === statusFilter;
+        statusFilter === "all" || user.status === statusFilter;
 
       return matchesSearch && matchesRole && matchesStatus;
     });
   }, [users, search, roleFilter, statusFilter]);
 
   async function handleStatusChange(userId, newStatus) {
-    const currentUser = users.find(
-      (user) => user._id === userId
-    );
+    const currentUser = users.find((user) => user._id === userId);
 
     if (!currentUser || currentUser.role === "admin") {
       return;
@@ -127,7 +110,7 @@ function AdminDashboard() {
     }
 
     const confirmed = window.confirm(
-      `Change ${currentUser.name}'s account status from ${currentUser.status} to ${newStatus}?`
+      `Change ${currentUser.name}'s account status from ${currentUser.status} to ${newStatus}?`,
     );
 
     if (!confirmed) return;
@@ -137,10 +120,7 @@ function AdminDashboard() {
       setError("");
       setSuccess("");
 
-      const data = await updateUserStatus(
-        userId,
-        newStatus
-      );
+      const data = await updateUserStatus(userId, newStatus);
 
       setUsers((previousUsers) =>
         previousUsers.map((user) =>
@@ -149,12 +129,12 @@ function AdminDashboard() {
                 ...user,
                 status: data.user.status,
               }
-            : user
-        )
+            : user,
+        ),
       );
 
       setSuccess(
-        `${currentUser.name}'s account status has been updated to ${data.user.status}.`
+        `${currentUser.name}'s account status has been updated to ${data.user.status}.`,
       );
     } catch (err) {
       setError(err.message);
@@ -198,26 +178,25 @@ function AdminDashboard() {
             </Link>
 
             <Link
-  to="/admin/finances"
-  className="rounded-full border border-[#CBD8C4] bg-white px-5 py-3 text-sm font-semibold text-[#194C35] transition hover:bg-[#F2F6EE]"
->
-  Manage Finances
-</Link>
+              to="/admin/finances"
+              className="rounded-full border border-[#CBD8C4] bg-white px-5 py-3 text-sm font-semibold text-[#194C35] transition hover:bg-[#F2F6EE]"
+            >
+              Manage Finances
+            </Link>
 
-<Link
-  to="/admin/products"
-  className="rounded-full border border-[#CBD8C4] bg-white px-5 py-3 text-sm font-semibold text-[#194C35] transition hover:bg-[#F2F6EE]"
->
-  Manage Products
-</Link>
+            <Link
+              to="/admin/products"
+              className="rounded-full border border-[#CBD8C4] bg-white px-5 py-3 text-sm font-semibold text-[#194C35] transition hover:bg-[#F2F6EE]"
+            >
+              Manage Products
+            </Link>
 
-<Link
-  to="/admin/audit-logs"
-  className="rounded-full border border-[#CBD8C4] bg-white px-5 py-3 text-sm font-semibold text-[#194C35] transition hover:bg-[#F2F6EE]"
->
-  Audit Logs
-</Link>
-
+            <Link
+              to="/admin/audit-logs"
+              className="rounded-full border border-[#CBD8C4] bg-white px-5 py-3 text-sm font-semibold text-[#194C35] transition hover:bg-[#F2F6EE]"
+            >
+              Audit Logs
+            </Link>
           </div>
         </div>
 
@@ -308,9 +287,7 @@ function AdminDashboard() {
                 <input
                   type="search"
                   value={search}
-                  onChange={(event) =>
-                    setSearch(event.target.value)
-                  }
+                  onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search name, email, or phone..."
                   aria-label="Search users"
                   className="min-w-0 flex-1 basis-64 rounded-xl border border-[#DCE5D6] bg-[#FAFBF8] px-4 py-3 text-sm text-[#183B2B] outline-none focus:border-[#77975F]"
@@ -318,28 +295,20 @@ function AdminDashboard() {
 
                 <select
                   value={roleFilter}
-                  onChange={(event) =>
-                    setRoleFilter(event.target.value)
-                  }
+                  onChange={(event) => setRoleFilter(event.target.value)}
                   aria-label="Filter users by role"
                   className="rounded-xl border border-[#DCE5D6] bg-[#FAFBF8] px-4 py-3 text-sm text-[#183B2B] outline-none focus:border-[#77975F]"
                 >
                   <option value="all">All roles</option>
                   <option value="farmer">Farmers</option>
                   <option value="buyer">Buyers</option>
-                  <option value="deliveryAgent">
-                    Delivery Agents
-                  </option>
-                  <option value="admin">
-                    Administrators
-                  </option>
+                  <option value="deliveryAgent">Delivery Agents</option>
+                  <option value="admin">Administrators</option>
                 </select>
 
                 <select
                   value={statusFilter}
-                  onChange={(event) =>
-                    setStatusFilter(event.target.value)
-                  }
+                  onChange={(event) => setStatusFilter(event.target.value)}
                   aria-label="Filter users by status"
                   className="rounded-xl border border-[#DCE5D6] bg-[#FAFBF8] px-4 py-3 text-sm text-[#183B2B] outline-none focus:border-[#77975F]"
                 >
@@ -356,18 +325,10 @@ function AdminDashboard() {
                   <table className="w-full min-w-[850px] text-left text-sm">
                     <thead className="bg-[#F5F8F1] text-[#536E59]">
                       <tr>
-                        <th className="px-5 py-4 font-semibold">
-                          User
-                        </th>
-                        <th className="px-5 py-4 font-semibold">
-                          Role
-                        </th>
-                        <th className="px-5 py-4 font-semibold">
-                          Status
-                        </th>
-                        <th className="px-5 py-4 font-semibold">
-                          Verified
-                        </th>
+                        <th className="px-5 py-4 font-semibold">User</th>
+                        <th className="px-5 py-4 font-semibold">Role</th>
+                        <th className="px-5 py-4 font-semibold">Status</th>
+                        <th className="px-5 py-4 font-semibold">Verified</th>
                         <th className="px-5 py-4 font-semibold">
                           Account actions
                         </th>
@@ -444,27 +405,19 @@ function AdminDashboard() {
                             ) : (
                               <select
                                 value={user.status}
-                                disabled={
-                                  updatingId === user._id
-                                }
+                                disabled={updatingId === user._id}
                                 onChange={(event) =>
                                   handleStatusChange(
                                     user._id,
-                                    event.target.value
+                                    event.target.value,
                                   )
                                 }
                                 aria-label={`Change status for ${user.name}`}
                                 className="rounded-lg border border-[#DCE5D6] bg-white px-3 py-2.5 text-xs font-medium text-[#194C35] outline-none focus:border-[#77975F] disabled:cursor-not-allowed disabled:opacity-50"
                               >
-                                <option value="active">
-                                  Active
-                                </option>
-                                <option value="inactive">
-                                  Inactive
-                                </option>
-                                <option value="suspended">
-                                  Suspended
-                                </option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="suspended">Suspended</option>
                               </select>
                             )}
                           </td>

@@ -1,8 +1,6 @@
-
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const API_ORIGIN = API_URL.replace(/\/api\/?$/, "");
 
@@ -46,17 +44,17 @@ export default function AdminProducts() {
     loadProducts();
   }, [loadProducts]);
 
-  const stats = useMemo(() => ({
-    total: products.length,
-    available: products.filter(
-      (p) =>
-        p.status === "available" &&
-        p.moderation?.status !== "removed"
-    ).length,
-    removed: products.filter(
-      (p) => p.moderation?.status === "removed"
-    ).length,
-  }), [products]);
+  const stats = useMemo(
+    () => ({
+      total: products.length,
+      available: products.filter(
+        (p) => p.status === "available" && p.moderation?.status !== "removed",
+      ).length,
+      removed: products.filter((p) => p.moderation?.status === "removed")
+        .length,
+    }),
+    [products],
+  );
 
   const filteredProducts = useMemo(() => {
     const term = search.toLowerCase().trim();
@@ -96,7 +94,7 @@ export default function AdminProducts() {
             action,
             reason: removalReason,
           }),
-        }
+        },
       );
 
       const data = await response.json();
@@ -124,7 +122,7 @@ export default function AdminProducts() {
   const handleRestore = (product) => {
     if (
       window.confirm(
-        `Restore "${product.name}" to its previous listing status?`
+        `Restore "${product.name}" to its previous listing status?`,
       )
     ) {
       moderate(product, "restore");
@@ -171,13 +169,19 @@ export default function AdminProducts() {
         </div>
 
         {error && (
-          <p role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-sm text-red-700">
+          <p
+            role="alert"
+            className="mt-5 rounded-xl bg-red-50 p-4 text-sm text-red-700"
+          >
             {error}
           </p>
         )}
 
         {success && (
-          <p role="status" className="mt-5 rounded-xl bg-green-50 p-4 text-sm text-green-800">
+          <p
+            role="status"
+            className="mt-5 rounded-xl bg-green-50 p-4 text-sm text-green-800"
+          >
             {success}
           </p>
         )}
@@ -203,9 +207,7 @@ export default function AdminProducts() {
         </div>
 
         {loading ? (
-          <p className="mt-8 text-center text-gray-500">
-            Loading products...
-          </p>
+          <p className="mt-8 text-center text-gray-500">Loading products...</p>
         ) : (
           <div className="mt-6 overflow-x-auto rounded-2xl border border-[#E1E8DC] bg-white shadow-sm">
             <table className="w-full min-w-[800px] text-left text-sm">
@@ -223,14 +225,10 @@ export default function AdminProducts() {
 
               <tbody>
                 {filteredProducts.map((product) => {
-                  const removed =
-                    product.moderation?.status === "removed";
+                  const removed = product.moderation?.status === "removed";
 
                   return (
-                    <tr
-                      key={product._id}
-                      className="border-t border-[#EEF1EA]"
-                    >
+                    <tr key={product._id} className="border-t border-[#EEF1EA]">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           {product.images?.[0] ? (

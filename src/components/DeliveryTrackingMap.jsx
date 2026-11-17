@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import {
   MapContainer,
@@ -35,18 +34,12 @@ function MovingAgent({ location }) {
     location.longitude,
   ]);
 
-  const positionRef = useRef([
-    location.latitude,
-    location.longitude,
-  ]);
+  const positionRef = useRef([location.latitude, location.longitude]);
 
   const animationRef = useRef(null);
 
   useEffect(() => {
-    const destination = [
-      location.latitude,
-      location.longitude,
-    ];
+    const destination = [location.latitude, location.longitude];
 
     const start = [...positionRef.current];
 
@@ -68,10 +61,7 @@ function MovingAgent({ location }) {
     const startedAt = performance.now();
 
     function animate(now) {
-      const progress = Math.min(
-        (now - startedAt) / ANIMATION_DURATION,
-        1
-      );
+      const progress = Math.min((now - startedAt) / ANIMATION_DURATION, 1);
 
       // Smooth acceleration and deceleration.
       const eased =
@@ -80,18 +70,15 @@ function MovingAgent({ location }) {
           : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
       const nextPosition = [
-        start[0] +
-          (destination[0] - start[0]) * eased,
-        start[1] +
-          (destination[1] - start[1]) * eased,
+        start[0] + (destination[0] - start[0]) * eased,
+        start[1] + (destination[1] - start[1]) * eased,
       ];
 
       positionRef.current = nextPosition;
       setPosition(nextPosition);
 
       if (progress < 1) {
-        animationRef.current =
-          requestAnimationFrame(animate);
+        animationRef.current = requestAnimationFrame(animate);
       } else {
         animationRef.current = null;
       }
@@ -150,10 +137,7 @@ export default function DeliveryTrackingMap({ location }) {
     );
   }
 
-  const position = [
-    location.latitude,
-    location.longitude,
-  ];
+  const position = [location.latitude, location.longitude];
 
   return (
     <div className="overflow-hidden rounded-xl border border-[#DCE5D7]">

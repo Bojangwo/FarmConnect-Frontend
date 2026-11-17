@@ -16,21 +16,16 @@ export default function PayoutAccountVerification() {
 
       const token = sessionStorage.getItem("token");
 
-      const response = await fetch(
-        `${API_URL}/admin/payout-accounts`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_URL}/admin/payout-accounts`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.message || "Could not load payout accounts"
-        );
+        throw new Error(data.message || "Could not load payout accounts");
       }
 
       setAccounts(data.accounts || []);
@@ -48,11 +43,11 @@ export default function PayoutAccountVerification() {
   const verifyAccount = async (account) => {
     const confirmed = window.confirm(
       `Have you checked the account ownership?\n\n` +
-      `Recipient: ${account.name}\n` +
-      `Provider: ${account.provider.toUpperCase()}\n` +
-      `Number: ${account.phoneNumber}\n` +
-      `Account holder: ${account.accountHolderName}\n\n` +
-      `Click OK only after verifying these details.`
+        `Recipient: ${account.name}\n` +
+        `Provider: ${account.provider.toUpperCase()}\n` +
+        `Number: ${account.phoneNumber}\n` +
+        `Account holder: ${account.accountHolderName}\n\n` +
+        `Click OK only after verifying these details.`,
     );
 
     if (!confirmed) return;
@@ -71,15 +66,13 @@ export default function PayoutAccountVerification() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.message || "Verification failed"
-        );
+        throw new Error(data.message || "Verification failed");
       }
 
       setMessage(`${account.name}'s account verified.`);
@@ -97,9 +90,7 @@ export default function PayoutAccountVerification() {
     return true;
   });
 
-  const pendingCount = accounts.filter(
-    (account) => !account.isVerified
-  ).length;
+  const pendingCount = accounts.filter((account) => !account.isVerified).length;
 
   return (
     <section className="rounded-2xl border border-[#DFE6D8] bg-white p-5 shadow-sm sm:p-7">
@@ -139,21 +130,25 @@ export default function PayoutAccountVerification() {
       </div>
 
       {error && (
-        <p role="alert" className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+        <p
+          role="alert"
+          className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700"
+        >
           {error}
         </p>
       )}
 
       {message && (
-        <p role="status" className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-800">
+        <p
+          role="status"
+          className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-800"
+        >
           {message}
         </p>
       )}
 
       {loading ? (
-        <p className="text-sm text-[#718274]">
-          Loading payout accounts...
-        </p>
+        <p className="text-sm text-[#718274]">Loading payout accounts...</p>
       ) : visibleAccounts.length === 0 ? (
         <p className="rounded-xl bg-[#F7F9F4] p-5 text-sm text-[#718274]">
           No accounts found for this filter.
@@ -180,10 +175,7 @@ export default function PayoutAccountVerification() {
 
             <tbody>
               {visibleAccounts.map((account) => (
-                <tr
-                  key={account.userId}
-                  className="border-b border-[#E8EDE4]"
-                >
+                <tr key={account.userId} className="border-b border-[#E8EDE4]">
                   <td className="px-4 py-4">
                     <p className="font-semibold text-[#194C35]">
                       {account.name}
@@ -195,17 +187,11 @@ export default function PayoutAccountVerification() {
                     </p>
                   </td>
 
-                  <td className="px-4 py-4 capitalize">
-                    {account.provider}
-                  </td>
+                  <td className="px-4 py-4 capitalize">{account.provider}</td>
 
-                  <td className="px-4 py-4">
-                    {account.phoneNumber}
-                  </td>
+                  <td className="px-4 py-4">{account.phoneNumber}</td>
 
-                  <td className="px-4 py-4">
-                    {account.accountHolderName}
-                  </td>
+                  <td className="px-4 py-4">{account.accountHolderName}</td>
 
                   <td className="px-4 py-4">
                     <span
@@ -215,17 +201,13 @@ export default function PayoutAccountVerification() {
                           : "bg-amber-50 text-amber-800"
                       }`}
                     >
-                      {account.isVerified
-                        ? "Verified"
-                        : "Pending"}
+                      {account.isVerified ? "Verified" : "Pending"}
                     </span>
                   </td>
 
                   <td className="px-4 py-4">
                     {account.isVerified ? (
-                      <span className="text-xs text-[#718274]">
-                        Approved
-                      </span>
+                      <span className="text-xs text-[#718274]">Approved</span>
                     ) : (
                       <button
                         type="button"

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -76,9 +75,7 @@ function BuyerProductDetails() {
         if (active) setFarmerReviews(data);
       } catch (err) {
         if (active) {
-          setReviewsError(
-            err.message || "Unable to load customer reviews."
-          );
+          setReviewsError(err.message || "Unable to load customer reviews.");
         }
       } finally {
         if (active) setReviewsLoading(false);
@@ -104,9 +101,7 @@ function BuyerProductDetails() {
     if (!image) return null;
 
     const imagePath =
-      typeof image === "string"
-        ? image
-        : image.url || image.path;
+      typeof image === "string" ? image : image.url || image.path;
 
     if (!imagePath) return null;
 
@@ -115,13 +110,9 @@ function BuyerProductDetails() {
     }
 
     const backendUrl =
-      import.meta.env.VITE_BACKEND_URL ||
-      "http://localhost:5000";
+      import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
-    return `${backendUrl.replace(/\/$/, "")}/${imagePath.replace(
-      /^\/+/,
-      ""
-    )}`;
+    return `${backendUrl.replace(/\/$/, "")}/${imagePath.replace(/^\/+/, "")}`;
   };
 
   async function handlePurchaseRequest(e) {
@@ -147,26 +138,24 @@ function BuyerProductDetails() {
     }
 
     if (!["buyer", "farmer"].includes(user.role)) {
-  setError("Only buyer and farmer accounts can submit purchase requests.");
-  return;
-}
+      setError("Only buyer and farmer accounts can submit purchase requests.");
+      return;
+    }
 
-const productFarmerId =
-  typeof product.farmer === "object"
-    ? product.farmer?._id
-    : product.farmer;
+    const productFarmerId =
+      typeof product.farmer === "object" ? product.farmer?._id : product.farmer;
 
-if (
-  user.role === "farmer" &&
-  String(productFarmerId) === String(user._id || user.id)
-) {
-  setError("You cannot purchase your own product.");
-  return;
-}
+    if (
+      user.role === "farmer" &&
+      String(productFarmerId) === String(user._id || user.id)
+    ) {
+      setError("You cannot purchase your own product.");
+      return;
+    }
 
     const quantity = Number(quantityRequested);
     const available = Number(
-      product.quantityAvailable ?? product.quantity ?? 0
+      product.quantityAvailable ?? product.quantity ?? 0,
     );
 
     if (!Number.isFinite(quantity) || quantity <= 0) {
@@ -254,20 +243,15 @@ if (
       : product.category;
 
   const farmer =
-    typeof product.farmer === "object"
-      ? product.farmer?.name
-      : "Local Farmer";
+    typeof product.farmer === "object" ? product.farmer?.name : "Local Farmer";
 
   const location =
-    [
-      product.location?.city,
-      product.location?.region,
-    ]
+    [product.location?.city, product.location?.region]
       .filter(Boolean)
       .join(", ") || "Location not specified";
 
   const availableQuantity = Number(
-    product.quantityAvailable ?? product.quantity ?? 0
+    product.quantityAvailable ?? product.quantity ?? 0,
   );
 
   const imageUrl = getProductImage(product);
@@ -389,9 +373,7 @@ if (
                 <p className="text-xs uppercase tracking-wider text-[#819083]">
                   Farm Location
                 </p>
-                <p className="mt-2 font-semibold text-[#254D36]">
-                  {location}
-                </p>
+                <p className="mt-2 font-semibold text-[#254D36]">{location}</p>
               </div>
 
               <div className="rounded-2xl border border-[#E3E9DD] bg-white p-5">
@@ -420,8 +402,8 @@ if (
                 🌾 Supporting local agriculture
               </p>
               <p className="mt-2 text-sm leading-7 text-[#647765]">
-                Connect directly with farmers and request fresh
-                produce through FarmConnect.
+                Connect directly with farmers and request fresh produce through
+                FarmConnect.
               </p>
             </div>
           </div>
@@ -445,8 +427,8 @@ if (
             </h2>
 
             <p className="mt-6 leading-8 text-white/75">
-              Tell the farmer how much you need and where
-              you'd like your produce delivered.
+              Tell the farmer how much you need and where you'd like your
+              produce delivered.
             </p>
 
             <div className="mt-10 space-y-5 border-t border-white/20 pt-8 text-sm text-white/85">
@@ -463,8 +445,8 @@ if (
             </h3>
 
             <p className="mt-3 text-sm leading-7 text-[#788579]">
-              Complete the form below to send your request
-              directly to the farmer.
+              Complete the form below to send your request directly to the
+              farmer.
             </p>
 
             {error && (
@@ -570,9 +552,8 @@ if (
                 </div>
 
                 <p className="mt-2 text-xs leading-6 text-[#829083]">
-                  Based on your requested quantity. Final charges,
-                  including any delivery fee, are determined
-                  during order processing.
+                  Based on your requested quantity. Final charges, including any
+                  delivery fee, are determined during order processing.
                 </p>
               </div>
 
@@ -584,8 +565,8 @@ if (
                 {submitting
                   ? "Sending Request..."
                   : availableQuantity <= 0
-                  ? "Currently Out of Stock"
-                  : "Send Purchase Request ↗"}
+                    ? "Currently Out of Stock"
+                    : "Send Purchase Request ↗"}
               </button>
             </form>
           </div>
@@ -603,8 +584,7 @@ if (
             </h2>
 
             <p className="mt-3 text-[#718073]">
-              Experiences shared by buyers who have purchased
-              from this farmer.
+              Experiences shared by buyers who have purchased from this farmer.
             </p>
           </div>
 
@@ -615,10 +595,7 @@ if (
           )}
 
           {reviewsError && (
-            <p
-              role="alert"
-              className="rounded-2xl bg-red-50 p-5 text-red-700"
-            >
+            <p role="alert" className="rounded-2xl bg-red-50 p-5 text-red-700">
               {reviewsError}
             </p>
           )}
@@ -634,14 +611,10 @@ if (
                   <>
                     <p className="mt-5 font-serif text-6xl font-semibold text-[#194C35]">
                       {farmerReviews.averageRating}
-                      <span className="text-2xl text-[#80947C]">
-                        /5
-                      </span>
+                      <span className="text-2xl text-[#80947C]">/5</span>
                     </p>
 
-                    <p className="mt-3 text-xl text-[#C18C37]">
-                      ★★★★★
-                    </p>
+                    <p className="mt-3 text-xl text-[#C18C37]">★★★★★</p>
                   </>
                 ) : (
                   <p className="mt-5 font-serif text-2xl text-[#194C35]">
@@ -651,9 +624,7 @@ if (
 
                 <p className="mt-4 text-sm text-[#70816E]">
                   Based on {farmerReviews.totalReviews} customer{" "}
-                  {farmerReviews.totalReviews === 1
-                    ? "review"
-                    : "reviews"}
+                  {farmerReviews.totalReviews === 1 ? "review" : "reviews"}
                 </p>
               </div>
 
@@ -679,9 +650,7 @@ if (
                             {review.buyer?.name || "Customer"}
                           </p>
                           <p className="mt-1 text-xs text-gray-400">
-                            {new Date(
-                              review.createdAt
-                            ).toLocaleDateString()}
+                            {new Date(review.createdAt).toLocaleDateString()}
                           </p>
                         </div>
 
@@ -695,8 +664,7 @@ if (
                       </div>
 
                       <p className="mt-5 text-xs font-semibold uppercase tracking-wider text-[#78965D]">
-                        Purchased:{" "}
-                        {review.product?.name || "Farm product"}
+                        Purchased: {review.product?.name || "Farm product"}
                       </p>
 
                       {review.comment && (
@@ -721,8 +689,8 @@ if (
             Fresh food. Stronger communities.
           </h3>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#718073]">
-            Every connection helps create more opportunities
-            for farmers and buyers across The Gambia.
+            Every connection helps create more opportunities for farmers and
+            buyers across The Gambia.
           </p>
         </div>
       </main>

@@ -5,13 +5,12 @@ import {
   getFarmerReviews,
 } from "../services/api";
 import { Link } from "react-router-dom";
-
-
+import PublicNavbar from "../components/PublicNavbar";
+import { useSearchParams } from "react-router-dom";
 
 function ProductCard({ product, rating, imageUrl, formatPrice }) {
   return (
     <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-[#e2e8db] bg-white shadow-[0_8px_24px_rgba(7,39,24,0.11)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_15px_30px_rgba(7,39,24,0.17)]">
-
       {/* Product image */}
       <Link
         to={`/buyer/products/${product._id}`}
@@ -40,7 +39,6 @@ function ProductCard({ product, rating, imageUrl, formatPrice }) {
 
       {/* Product information */}
       <div className="flex flex-1 flex-col p-3 sm:p-4">
-
         <h3 className="line-clamp-2 min-h-[2.5rem] font-serif text-sm font-semibold leading-5 text-[#183b2b] sm:text-base">
           {product.name}
         </h3>
@@ -61,14 +59,11 @@ function ProductCard({ product, rating, imageUrl, formatPrice }) {
               </span>
             </span>
           ) : (
-            <span className="text-[#8a948b]">
-              No reviews yet
-            </span>
+            <span className="text-[#8a948b]">No reviews yet</span>
           )}
         </div>
 
         <div className="mt-auto pt-3">
-
           <p className="break-words text-base font-bold text-[#194c35] sm:text-lg">
             D{formatPrice(product.price)}
             <span className="ml-1 text-[11px] font-normal text-[#7c897c]">
@@ -78,9 +73,7 @@ function ProductCard({ product, rating, imageUrl, formatPrice }) {
 
           <p className="mt-1 line-clamp-1 text-[10px] text-[#819083] sm:text-xs">
             Available:{" "}
-            {product.quantityAvailable ??
-              product.quantity ??
-              "Not specified"}{" "}
+            {product.quantityAvailable ?? product.quantity ?? "Not specified"}{" "}
             {product.unit}
           </p>
 
@@ -96,11 +89,17 @@ function ProductCard({ product, rating, imageUrl, formatPrice }) {
   );
 }
 
-
 function BuyerMarketplace() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+
+  const [search, setSearch] = useState(() => searchParams.get("search") || "");
+
+  useEffect(() => {
+    setSearch(searchParams.get("search") || "");
+  }, [searchParams]);
+
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
@@ -128,19 +127,17 @@ function BuyerMarketplace() {
         setCategories(
           Array.isArray(categoriesData)
             ? categoriesData
-            : categoriesData.categories || []
+            : categoriesData.categories || [],
         );
 
         const farmerIds = [
           ...new Set(
-            productList
-              .map((product) => product.farmer?._id)
-              .filter(Boolean)
+            productList.map((product) => product.farmer?._id).filter(Boolean),
           ),
         ];
 
         const results = await Promise.allSettled(
-          farmerIds.map(getFarmerReviews)
+          farmerIds.map(getFarmerReviews),
         );
 
         if (!active) return;
@@ -188,8 +185,7 @@ function BuyerMarketplace() {
           : product.category;
 
       return (
-        matchesSearch &&
-        (!selectedCategory || categoryId === selectedCategory)
+        matchesSearch && (!selectedCategory || categoryId === selectedCategory)
       );
     })
     .sort((a, b) => {
@@ -219,9 +215,7 @@ function BuyerMarketplace() {
     if (!image) return null;
 
     const imagePath =
-      typeof image === "string"
-        ? image
-        : image.url || image.path;
+      typeof image === "string" ? image : image.url || image.path;
 
     if (!imagePath) return null;
 
@@ -232,106 +226,179 @@ function BuyerMarketplace() {
     // Set this to your backend URL if your API uses
     // a different server or port.
     const backendUrl =
-      import.meta.env.VITE_BACKEND_URL ||
-      "http://localhost:5000";
+      import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
-    return `${backendUrl.replace(/\/$/, "")}/${imagePath.replace(
-      /^\/+/,
-      ""
-    )}`;
+    return `${backendUrl.replace(/\/$/, "")}/${imagePath.replace(/^\/+/, "")}`;
   };
 
- 
-return (
-  <div className="min-h-screen bg-[#faf9f4] text-[#183b2b]">
-    {/* Full-width photo hero */}
-    <section className="relative isolate min-h-[610px] overflow-hidden bg-[#103323] sm:min-h-[690px] lg:min-h-[740px]">
-      <div className="absolute inset-0 bg-[url('/images/hero-produce.jpg')] bg-cover bg-center" aria-hidden="true" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#092c1f]/95 via-[#0b3425]/80 to-[#09291e]/40" aria-hidden="true" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#09291e]/80 via-transparent to-transparent" aria-hidden="true" />
-      <div className="relative mx-auto flex max-w-7xl flex-col px-6 pb-48 pt-20 sm:pb-52 sm:pt-24 lg:pt-28">
-        <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.24em] text-[#c6dcaa]">
-          <span className="h-px w-9 bg-[#c6dcaa]" /> The FarmConnect marketplace
-        </div>
-        <h1 className="mt-7 max-w-3xl font-serif text-5xl font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
-          Fresh from the farm.<span className="block italic text-[#c9dfb2]">Made for your table.</span>
-        </h1>
-        <p className="mt-7 max-w-lg text-base leading-8 text-white/85 sm:text-lg">
-          Shop fresh produce directly from farmers across The Gambia. Discover local harvests, compare prices, and find what you need.
-        </p>
-        <div className="mt-9 flex flex-wrap items-center gap-4">
-          <a href="#marketplace-products" className="rounded-full bg-[#e4edda] px-7 py-3.5 text-sm font-bold text-[#194c35] transition hover:bg-white">Explore produce ↗</a>
-          <span className="text-sm text-white/80">Local farmers · Fresh harvests</span>
-        </div>
-      </div>
-    </section>
+  return (
+    <div className="min-h-screen bg-[#faf9f4] text-[#183b2b]">
+      <PublicNavbar />
 
-    {/* Product cards themselves overlap the hero, not the search panel. */}
-    <main id="marketplace-products" className="relative z-10 mx-auto -mt-28 max-w-7xl px-5 pb-36 sm:-mt-36 sm:px-6 lg:-mt-40">
-      {loading ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div key={index} className="animate-pulse overflow-hidden rounded-[24px] bg-white shadow-xl">
-              <div className="h-52 bg-[#e3eadf]" />
-              <div className="space-y-4 p-6"><div className="h-6 w-3/4 rounded bg-[#e3eadf]" /><div className="h-4 w-1/2 rounded bg-[#edf1ea]" /><div className="h-12 rounded bg-[#edf1ea]" /></div>
-            </div>
-          ))}
+      {/* Full-width photo hero */}
+      <section className="relative isolate min-h-[610px] overflow-hidden bg-[#103323] sm:min-h-[690px] lg:min-h-[740px]">
+        <div
+          className="absolute inset-0 bg-[url('/images/hero-produce.jpg')] bg-cover bg-center"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-[#092c1f]/95 via-[#0b3425]/80 to-[#09291e]/40"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-[#09291e]/80 via-transparent to-transparent"
+          aria-hidden="true"
+        />
+        <div className="relative mx-auto flex max-w-7xl flex-col px-6 pb-48 pt-20 sm:pb-52 sm:pt-24 lg:pt-28">
+          <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.24em] text-[#c6dcaa]">
+            <span className="h-px w-9 bg-[#c6dcaa]" /> The FarmConnect
+            marketplace
+          </div>
+          <h1 className="mt-7 max-w-3xl font-serif text-5xl font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
+            Fresh from the farm.
+            <span className="block italic text-[#c9dfb2]">
+              Made for your table.
+            </span>
+          </h1>
+          <p className="mt-7 max-w-lg text-base leading-8 text-white/85 sm:text-lg">
+            Shop fresh produce directly from farmers across The Gambia. Discover
+            local harvests, compare prices, and find what you need.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-4">
+            <a
+              href="#marketplace-products"
+              className="rounded-full bg-[#e4edda] px-7 py-3.5 text-sm font-bold text-[#194c35] transition hover:bg-white"
+            >
+              Explore produce ↗
+            </a>
+            <span className="text-sm text-white/80">
+              Local farmers · Fresh harvests
+            </span>
+          </div>
         </div>
-      ) : error ? (
-        <div role="alert" className="rounded-2xl bg-white p-7 text-red-700 shadow-lg">{error}</div>
-      ) : filteredProducts.length > 0 ? (
-        <div className="grid auto-rows-fr grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product._id}
-              product={product}
-              rating={farmerRatings[product.farmer?._id]}
-              imageUrl={getProductImage(product)}
-              formatPrice={formatPrice}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-2xl bg-white p-8 text-center shadow-lg">
-          <p className="font-serif text-2xl">{products.length ? "No matching produce" : "No products available yet"}</p>
-          <p className="mt-2 text-sm text-[#6c796c]">{products.length ? "Try another search or category." : "Check back soon for fresh listings."}</p>
-        </div>
-      )}
-      <div className="mt-12 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#77975f]">Explore the harvest</p>
-          <h2 className="mt-2 font-serif text-3xl font-semibold sm:text-4xl">Our fresh market</h2>
-          <p className="mt-2 text-sm text-[#6d7c70]">Find produce from local farmers, all in one place.</p>
-        </div>
-        {!loading && !error && <span className="rounded-full border border-[#dfe7d7] px-4 py-2 text-sm text-[#56735a]">{filteredProducts.length} products</span>}
-      </div>
-    </main>
+      </section>
 
-    {/* Filters appear after the product grid in document order, but stay accessible
+      {/* Product cards themselves overlap the hero, not the search panel. */}
+      <main
+        id="marketplace-products"
+        className="relative z-10 mx-auto -mt-28 max-w-7xl px-5 pb-36 sm:-mt-36 sm:px-6 lg:-mt-40"
+      >
+        {loading ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div
+                key={index}
+                className="animate-pulse overflow-hidden rounded-[24px] bg-white shadow-xl"
+              >
+                <div className="h-52 bg-[#e3eadf]" />
+                <div className="space-y-4 p-6">
+                  <div className="h-6 w-3/4 rounded bg-[#e3eadf]" />
+                  <div className="h-4 w-1/2 rounded bg-[#edf1ea]" />
+                  <div className="h-12 rounded bg-[#edf1ea]" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div
+            role="alert"
+            className="rounded-2xl bg-white p-7 text-red-700 shadow-lg"
+          >
+            {error}
+          </div>
+        ) : filteredProducts.length > 0 ? (
+          <div className="grid auto-rows-fr grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                rating={farmerRatings[product.farmer?._id]}
+                imageUrl={getProductImage(product)}
+                formatPrice={formatPrice}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl bg-white p-8 text-center shadow-lg">
+            <p className="font-serif text-2xl">
+              {products.length
+                ? "No matching produce"
+                : "No products available yet"}
+            </p>
+            <p className="mt-2 text-sm text-[#6c796c]">
+              {products.length
+                ? "Try another search or category."
+                : "Check back soon for fresh listings."}
+            </p>
+          </div>
+        )}
+        <div className="mt-12 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#77975f]">
+              Explore the harvest
+            </p>
+            <h2 className="mt-2 font-serif text-3xl font-semibold sm:text-4xl">
+              Our fresh market
+            </h2>
+            <p className="mt-2 text-sm text-[#6d7c70]">
+              Find produce from local farmers, all in one place.
+            </p>
+          </div>
+          {!loading && !error && (
+            <span className="rounded-full border border-[#dfe7d7] px-4 py-2 text-sm text-[#56735a]">
+              {filteredProducts.length} products
+            </span>
+          )}
+        </div>
+      </main>
+
+      {/* Filters appear after the product grid in document order, but stay accessible
         at the bottom of the viewport while buyers scroll. */}
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#dfe7d7] bg-[#faf9f4]/95 px-3 py-3 shadow-[0_-10px_35px_rgba(7,39,24,0.12)] backdrop-blur-md sm:px-6">
-      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-2 sm:grid-cols-[minmax(0,1fr)_190px_180px] sm:gap-3">
-        <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search products or farmers..." aria-label="Search products or farmers" className="col-span-2 min-w-0 rounded-xl border border-[#dbe5d6] bg-white px-4 py-3 text-sm outline-none focus:border-[#77975f] sm:col-span-1" />
-        <select value={selectedCategory} onChange={(event) => setSelectedCategory(event.target.value)} aria-label="Filter by category" className="min-w-0 rounded-xl border border-[#dbe5d6] bg-white px-3 py-3 text-sm outline-none focus:border-[#77975f]">
-          <option value="">All categories</option>
-          {categories.map((category) => <option key={category._id} value={category._id}>{category.name}</option>)}
-        </select>
-        <select value={sortBy} onChange={(event) => setSortBy(event.target.value)} aria-label="Sort products" className="min-w-0 rounded-xl border border-[#dbe5d6] bg-white px-3 py-3 text-sm outline-none focus:border-[#77975f]">
-          <option value="newest">Newest first</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A to Z</option>
-        </select>
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#dfe7d7] bg-[#faf9f4]/95 px-3 py-3 shadow-[0_-10px_35px_rgba(7,39,24,0.12)] backdrop-blur-md sm:px-6">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-2 sm:grid-cols-[minmax(0,1fr)_190px_180px] sm:gap-3">
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search products or farmers..."
+            aria-label="Search products or farmers"
+            className="col-span-2 min-w-0 rounded-xl border border-[#dbe5d6] bg-white px-4 py-3 text-sm outline-none focus:border-[#77975f] sm:col-span-1"
+          />
+          <select
+            value={selectedCategory}
+            onChange={(event) => setSelectedCategory(event.target.value)}
+            aria-label="Filter by category"
+            className="min-w-0 rounded-xl border border-[#dbe5d6] bg-white px-3 py-3 text-sm outline-none focus:border-[#77975f]"
+          >
+            <option value="">All categories</option>
+            {categories.map((category) => (
+              <option key={category._id} value={category._id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          <select
+            value={sortBy}
+            onChange={(event) => setSortBy(event.target.value)}
+            aria-label="Sort products"
+            className="min-w-0 rounded-xl border border-[#dbe5d6] bg-white px-3 py-3 text-sm outline-none focus:border-[#77975f]"
+          >
+            <option value="newest">Newest first</option>
+            <option value="price-low">Price: low to high</option>
+            <option value="price-high">Price: high to low</option>
+            <option value="name">Name: A to Z</option>
+          </select>
+        </div>
       </div>
-    </div>
 
-    <footer className="bg-[#143C2B] px-6 py-9 text-center text-sm text-white/70">
-      <span className="font-serif text-xl font-semibold text-white">
-        FarmConnect
-      </span>
-      <p className="mt-2">
-        Connecting farmers and buyers across The Gambia.
-      </p>
-    </footer>
-  </div>
-);
+      <footer className="bg-[#143C2B] px-6 py-9 text-center text-sm text-white/70">
+        <span className="font-serif text-xl font-semibold text-white">
+          FarmConnect
+        </span>
+        <p className="mt-2">Connecting farmers and buyers across The Gambia.</p>
+      </footer>
+    </div>
+  );
 }
 
 export default BuyerMarketplace;

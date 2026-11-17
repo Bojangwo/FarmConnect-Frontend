@@ -1,9 +1,7 @@
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
@@ -68,15 +66,12 @@ export default function NotificationBell() {
 
   const markAsRead = async (id) => {
     try {
-      const response = await fetch(
-        `${API_URL}/notifications/${id}/read`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_URL}/notifications/${id}/read`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Failed to mark notification as read");
@@ -90,15 +85,12 @@ export default function NotificationBell() {
 
   const markAllAsRead = async () => {
     try {
-      const response = await fetch(
-        `${API_URL}/notifications/read-all`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_URL}/notifications/read-all`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Failed to mark notifications as read");
@@ -155,9 +147,7 @@ export default function NotificationBell() {
       {open && (
         <div className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-[#E2E8DD] bg-white shadow-xl">
           <div className="flex items-center justify-between border-b border-[#E2E8DD] px-4 py-3">
-            <h3 className="font-semibold text-[#194C35]">
-              Notifications
-            </h3>
+            <h3 className="font-semibold text-[#194C35]">Notifications</h3>
 
             {unreadCount > 0 && (
               <button
@@ -193,9 +183,7 @@ export default function NotificationBell() {
                 const content = (
                   <div
                     className={`border-b border-gray-100 px-4 py-3 transition hover:bg-[#F3F7EF] ${
-                      !notification.isRead
-                        ? "bg-[#F0F6EA]"
-                        : "bg-white"
+                      !notification.isRead ? "bg-[#F0F6EA]" : "bg-white"
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -213,9 +201,7 @@ export default function NotificationBell() {
                         </p>
 
                         <p className="mt-2 text-[11px] text-gray-400">
-                          {new Date(
-                            notification.createdAt
-                          ).toLocaleString()}
+                          {new Date(notification.createdAt).toLocaleString()}
                         </p>
                       </div>
                     </div>
@@ -227,9 +213,7 @@ export default function NotificationBell() {
                   <Link
                     key={notification._id}
                     to={notification.link}
-                    onClick={() =>
-                      handleNotificationClick(notification)
-                    }
+                    onClick={() => handleNotificationClick(notification)}
                     className="block"
                   >
                     {content}
@@ -238,9 +222,7 @@ export default function NotificationBell() {
                   <button
                     key={notification._id}
                     type="button"
-                    onClick={() =>
-                      handleNotificationClick(notification)
-                    }
+                    onClick={() => handleNotificationClick(notification)}
                     className="block w-full text-left"
                   >
                     {content}

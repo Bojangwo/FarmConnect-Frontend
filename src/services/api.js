@@ -23,8 +23,6 @@ export async function loginUser(email, password) {
   return data;
 }
 
-
-
 export async function registerUser(userData) {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
@@ -43,98 +41,69 @@ export async function registerUser(userData) {
   return data;
 }
 
-
-
-
 export async function getMyProducts() {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/products/my-products`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/products/my-products`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch your products"
-    );
+    throw new Error(data.message || "Failed to fetch your products");
   }
 
   return data;
 }
-
-
 
 export async function getCategories() {
-  const response = await fetch(
-    `${API_BASE_URL}/categories`
-  );
+  const response = await fetch(`${API_BASE_URL}/categories`);
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch categories"
-    );
+    throw new Error(data.message || "Failed to fetch categories");
   }
 
   return data;
 }
-
-
 
 export async function createProduct(formData) {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/products`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/products`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to create product"
-    );
+    throw new Error(data.message || "Failed to create product");
   }
 
   return data;
 }
-
 
 export async function updateProduct(productId, updates) {
   const token = sessionStorage.getItem("token");
   const isFormData = updates instanceof FormData;
 
-  const response = await fetch(
-    `${API_BASE_URL}/products/${productId}`,
-    {
-      method: "PUT",
-      headers: {
-        ...(isFormData
-          ? {}
-          : { "Content-Type": "application/json" }),
-        Authorization: `Bearer ${token}`,
-      },
-      body: isFormData
-        ? updates
-        : JSON.stringify(updates),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+    method: "PUT",
+    headers: {
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      Authorization: `Bearer ${token}`,
+    },
+    body: isFormData ? updates : JSON.stringify(updates),
+  });
 
   const data = await response.json();
 
@@ -145,51 +114,38 @@ export async function updateProduct(productId, updates) {
   return data;
 }
 
-
 export async function deleteProduct(productId) {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/products/${productId}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to remove product"
-    );
+    throw new Error(data.message || "Failed to remove product");
   }
 
   return data;
 }
 
-
-
 export async function getFarmerPurchaseRequests() {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/purchase-requests/farmer`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/purchase-requests/farmer`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch purchase requests"
-    );
+    throw new Error(data.message || "Failed to fetch purchase requests");
   }
 
   return data;
@@ -207,79 +163,59 @@ export async function respondToPurchaseRequest(requestId, status) {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ status }),
-    }
+    },
   );
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to respond to purchase request"
-    );
+    throw new Error(data.message || "Failed to respond to purchase request");
   }
 
   return data;
 }
-
-
-
 
 export async function getMyOrders(type = null) {
   const token = sessionStorage.getItem("token");
 
-  const query = type
-    ? `?type=${encodeURIComponent(type)}`
-    : "";
+  const query = type ? `?type=${encodeURIComponent(type)}` : "";
 
-  const response = await fetch(
-    `${API_BASE_URL}/orders${query}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/orders${query}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch orders"
-    );
+    throw new Error(data.message || "Failed to fetch orders");
   }
 
   return data;
 }
-
 
 export async function updateOrderStatus(orderId, status) {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/orders/${orderId}/status`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status }),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to update order status"
-    );
+    throw new Error(data.message || "Failed to update order status");
   }
 
   return data;
 }
-
-
 
 export async function getMarketplaceProducts() {
   const response = await fetch(`${API_BASE_URL}/products`, {
@@ -289,61 +225,44 @@ export async function getMarketplaceProducts() {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch marketplace products"
-    );
+    throw new Error(data.message || "Failed to fetch marketplace products");
   }
 
   return data;
 }
 
-
-
 export async function getProductById(productId) {
-  const response = await fetch(
-    `${API_BASE_URL}/products/${productId}`
-  );
+  const response = await fetch(`${API_BASE_URL}/products/${productId}`);
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch product details"
-    );
+    throw new Error(data.message || "Failed to fetch product details");
   }
 
   return data;
 }
-
-
 
 export async function createPurchaseRequest(requestData) {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/purchase-requests`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(requestData),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/purchase-requests`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(requestData),
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to send purchase request"
-    );
+    throw new Error(data.message || "Failed to send purchase request");
   }
 
   return data;
 }
-
-
 
 export async function confirmOrderDelivery(orderId) {
   const token = sessionStorage.getItem("token");
@@ -355,41 +274,32 @@ export async function confirmOrderDelivery(orderId) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to confirm delivery"
-    );
+    throw new Error(data.message || "Failed to confirm delivery");
   }
 
   return data;
 }
 
-
-
 export async function getMyDeliveries() {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/orders/my-deliveries`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/orders/my-deliveries`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch assigned deliveries"
-    );
+    throw new Error(data.message || "Failed to fetch assigned deliveries");
   }
 
   return data;
@@ -407,15 +317,13 @@ export async function updateDeliveryStatus(orderId, deliveryStatus) {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ deliveryStatus }),
-    }
+    },
   );
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to update delivery status"
-    );
+    throw new Error(data.message || "Failed to update delivery status");
   }
 
   return data;
@@ -425,7 +333,7 @@ export async function updateDeliveryLocation(
   orderId,
   latitude,
   longitude,
-  accuracy
+  accuracy,
 ) {
   const token = sessionStorage.getItem("token");
 
@@ -442,20 +350,17 @@ export async function updateDeliveryLocation(
         longitude,
         accuracy,
       }),
-    }
+    },
   );
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to update delivery location"
-    );
+    throw new Error(data.message || "Failed to update delivery location");
   }
 
   return data;
 }
-
 
 export async function getAllUsers() {
   const token = sessionStorage.getItem("token");
@@ -470,43 +375,32 @@ export async function getAllUsers() {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch registered users"
-    );
+    throw new Error(data.message || "Failed to fetch registered users");
   }
 
   return data;
 }
-
-
 
 export async function updateUserStatus(userId, status) {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/admin/users/${userId}/status`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status }),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to update user status"
-    );
+    throw new Error(data.message || "Failed to update user status");
   }
 
   return data;
 }
-
-
 
 export async function createCategory(categoryData) {
   const token = sessionStorage.getItem("token");
@@ -523,125 +417,91 @@ export async function createCategory(categoryData) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to create category"
-    );
+    throw new Error(data.message || "Failed to create category");
   }
 
   return data;
 }
-
 
 export async function updateCategory(categoryId, categoryData) {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/categories/${categoryId}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(categoryData),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(categoryData),
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to update category"
-    );
+    throw new Error(data.message || "Failed to update category");
   }
 
   return data;
 }
-
-
 
 export async function deactivateCategory(categoryId) {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/categories/${categoryId}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to deactivate category"
-    );
+    throw new Error(data.message || "Failed to deactivate category");
   }
 
   return data;
 }
-
-
 
 export async function getAllCategoriesAdmin() {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/admin/categories`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/admin/categories`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch admin categories"
-    );
+    throw new Error(data.message || "Failed to fetch admin categories");
   }
 
   return data;
 }
-
-
 
 export async function getAllOrdersAdmin() {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/admin/orders`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/admin/orders`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch orders"
-    );
+    throw new Error(data.message || "Failed to fetch orders");
   }
 
   return data;
 }
 
-
-
-export async function assignDeliveryAgentAdmin(
-  orderId,
-  deliveryAgentId
-) {
+export async function assignDeliveryAgentAdmin(orderId, deliveryAgentId) {
   const token = sessionStorage.getItem("token");
 
   const response = await fetch(
@@ -653,40 +513,32 @@ export async function assignDeliveryAgentAdmin(
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ deliveryAgentId }),
-    }
+    },
   );
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to assign delivery agent"
-    );
+    throw new Error(data.message || "Failed to assign delivery agent");
   }
 
   return data;
 }
 
-
 export async function initiatePayment(orderId) {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/payments/${orderId}/initiate`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/payments/${orderId}/initiate`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to initiate payment"
-    );
+    throw new Error(data.message || "Failed to initiate payment");
   }
 
   return data;
@@ -695,27 +547,21 @@ export async function initiatePayment(orderId) {
 export async function verifyPayment(paymentId) {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/payments/${paymentId}/verify`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/payments/${paymentId}/verify`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to verify payment"
-    );
+    throw new Error(data.message || "Failed to verify payment");
   }
 
   return data;
 }
-
 
 // Get the latest delivery location for the logged-in buyer
 export async function getBuyerDeliveryLocation(orderId) {
@@ -728,20 +574,17 @@ export async function getBuyerDeliveryLocation(orderId) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch delivery location"
-    );
+    throw new Error(data.message || "Failed to fetch delivery location");
   }
 
   return data;
 }
-
 
 export async function createReview(orderId, rating, comment) {
   const token = sessionStorage.getItem("token");
@@ -762,31 +605,23 @@ export async function createReview(orderId, rating, comment) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to submit review"
-    );
+    throw new Error(data.message || "Failed to submit review");
   }
 
   return data;
 }
 
-
 export async function getFarmerReviews(farmerId) {
-  const response = await fetch(
-    `${API_BASE_URL}/reviews/farmer/${farmerId}`
-  );
+  const response = await fetch(`${API_BASE_URL}/reviews/farmer/${farmerId}`);
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to fetch farmer reviews"
-    );
+    throw new Error(data.message || "Failed to fetch farmer reviews");
   }
 
   return data;
 }
-
 
 // Append these exports to your existing src/services/api.js.
 // They use the API_BASE_URL already declared at the top of that file.
@@ -801,36 +636,43 @@ async function adminFinanceRequest(path, options = {}) {
     },
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.message || `Request failed (${response.status})`);
+  if (!response.ok)
+    throw new Error(data.message || `Request failed (${response.status})`);
   return data;
 }
 
 export const getAdminFinances = () => adminFinanceRequest("/admin/finances");
-export const getAdminPaymentSettings = () => adminFinanceRequest("/admin/payment-settings");
-export const updateAdminPaymentSettings = (settings) => adminFinanceRequest("/admin/payment-settings", { method: "PATCH", body: JSON.stringify(settings) });
-export const prepareAdminPayouts = (orderId) => adminFinanceRequest(`/admin/orders/${encodeURIComponent(orderId)}/prepare-payouts`, { method: "POST" });
-export const recordAdminPayout = (payoutId, details) => adminFinanceRequest(`/admin/payouts/${encodeURIComponent(payoutId)}/mark-paid`, { method: "PATCH", body: JSON.stringify(details) });
-
-
+export const getAdminPaymentSettings = () =>
+  adminFinanceRequest("/admin/payment-settings");
+export const updateAdminPaymentSettings = (settings) =>
+  adminFinanceRequest("/admin/payment-settings", {
+    method: "PATCH",
+    body: JSON.stringify(settings),
+  });
+export const prepareAdminPayouts = (orderId) =>
+  adminFinanceRequest(
+    `/admin/orders/${encodeURIComponent(orderId)}/prepare-payouts`,
+    { method: "POST" },
+  );
+export const recordAdminPayout = (payoutId, details) =>
+  adminFinanceRequest(
+    `/admin/payouts/${encodeURIComponent(payoutId)}/mark-paid`,
+    { method: "PATCH", body: JSON.stringify(details) },
+  );
 
 export async function getMyEarnings() {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/earnings/me`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/earnings/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to load earnings"
-    );
+    throw new Error(data.message || "Failed to load earnings");
   }
 
   return data;
@@ -839,21 +681,16 @@ export async function getMyEarnings() {
 export async function getMyPayoutDetails() {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/payout-details/me`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/payout-details/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to load payout details"
-    );
+    throw new Error(data.message || "Failed to load payout details");
   }
 
   return data;
@@ -862,44 +699,41 @@ export async function getMyPayoutDetails() {
 export async function updateMyPayoutDetails(details) {
   const token = sessionStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_BASE_URL}/payout-details/me`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(details),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/payout-details/me`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(details),
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Failed to save payout details"
-    );
+    throw new Error(data.message || "Failed to save payout details");
   }
 
   return data;
 }
 
-
-  export async function getFarmerReport(filters = {}) {
-     return roleReportRequest('farmer', filters);
-   }
-   export async function getDeliveryReport(filters = {}) {
-     return roleReportRequest('delivery', filters);
-   }
-   async function roleReportRequest(role, filters) {
-     const query = new URLSearchParams();
-     if (filters.startDate) query.set('startDate', filters.startDate);
-     if (filters.endDate) query.set('endDate', filters.endDate);
-     const response = await fetch(`${API_BASE_URL}/reports/${role}${query.size ? `?${query}` : ''}`, {
-       headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
-     });
-     const data = await response.json().catch(() => ({}));
-     if (!response.ok) throw new Error(data.message || 'Could not load report');
-     return data;
-   }
+export async function getFarmerReport(filters = {}) {
+  return roleReportRequest("farmer", filters);
+}
+export async function getDeliveryReport(filters = {}) {
+  return roleReportRequest("delivery", filters);
+}
+async function roleReportRequest(role, filters) {
+  const query = new URLSearchParams();
+  if (filters.startDate) query.set("startDate", filters.startDate);
+  if (filters.endDate) query.set("endDate", filters.endDate);
+  const response = await fetch(
+    `${API_BASE_URL}/reports/${role}${query.size ? `?${query}` : ""}`,
+    {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+    },
+  );
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.message || "Could not load report");
+  return data;
+}

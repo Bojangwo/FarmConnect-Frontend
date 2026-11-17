@@ -1,8 +1,6 @@
-
 import { useEffect, useState } from "react";
 
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const actionLabels = {
   USER_STATUS_CHANGED: "User status changed",
@@ -35,7 +33,7 @@ export default function AdminAuditLogs() {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
-          }
+          },
         );
 
         const data = await response.json();
@@ -62,8 +60,7 @@ export default function AdminAuditLogs() {
     };
   }, [page]);
 
-  const formatDate = (date) =>
-    date ? new Date(date).toLocaleString() : "—";
+  const formatDate = (date) => (date ? new Date(date).toLocaleString() : "—");
 
   return (
     <main className="min-h-screen bg-[#FAF9F4] px-4 py-8 sm:px-8">
@@ -81,7 +78,10 @@ export default function AdminAuditLogs() {
         </p>
 
         {error && (
-          <p role="alert" className="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700">
+          <p
+            role="alert"
+            className="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700"
+          >
             {error}
           </p>
         )}
@@ -114,9 +114,7 @@ export default function AdminAuditLogs() {
                       {actionLabels[log.action] || log.action}
                     </td>
 
-                    <td className="p-4">
-                      {log.targetType}
-                    </td>
+                    <td className="p-4">{log.targetType}</td>
 
                     <td className="p-4">
                       <button

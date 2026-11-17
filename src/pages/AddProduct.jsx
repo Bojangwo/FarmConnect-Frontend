@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getCategories, createProduct } from "../services/api";
@@ -21,17 +20,11 @@ function ImagePreview({ file, onRemove }) {
   return (
     <div className="group relative overflow-hidden rounded-xl border border-[#E1E8DC] bg-[#F2F5ED]">
       {url && (
-        <img
-          src={url}
-          alt={file.name}
-          className="h-36 w-full object-cover"
-        />
+        <img src={url} alt={file.name} className="h-36 w-full object-cover" />
       )}
 
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-3 pt-8">
-        <p className="truncate text-xs text-white">
-          {file.name}
-        </p>
+        <p className="truncate text-xs text-white">{file.name}</p>
       </div>
 
       <button
@@ -68,9 +61,7 @@ function AddProduct() {
   const [images, setImages] = useState([]);
 
   const [location, setLocation] = useState(() => {
-    const user = JSON.parse(
-      sessionStorage.getItem("user") || "null"
-    );
+    const user = JSON.parse(sessionStorage.getItem("user") || "null");
 
     return {
       address: user?.location?.address || "",
@@ -91,8 +82,8 @@ function AddProduct() {
         if (!cancelled) {
           setCategories(
             (data.categories || []).filter(
-              (category) => category.status === "active"
-            )
+              (category) => category.status === "active",
+            ),
           );
         }
       } catch (err) {
@@ -151,7 +142,7 @@ function AddProduct() {
 
   function removeImage(index) {
     setImages((previous) =>
-      previous.filter((_, imageIndex) => imageIndex !== index)
+      previous.filter((_, imageIndex) => imageIndex !== index),
     );
   }
 
@@ -187,7 +178,7 @@ function AddProduct() {
         enableHighAccuracy: true,
         timeout: 15000,
         maximumAge: 0,
-      }
+      },
     );
   }
 
@@ -252,7 +243,7 @@ function AddProduct() {
         city: location.city.trim(),
         region: location.region.trim(),
         coordinates: [longitude, latitude],
-      })
+      }),
     );
 
     images.forEach((image) => {
@@ -357,16 +348,11 @@ function AddProduct() {
                   className={inputClass}
                 >
                   <option value="">
-                    {loading
-                      ? "Loading categories..."
-                      : "Select category"}
+                    {loading ? "Loading categories..." : "Select category"}
                   </option>
 
                   {categories.map((category) => (
-                    <option
-                      key={category._id}
-                      value={category._id}
-                    >
+                    <option key={category._id} value={category._id}>
                       {category.name}
                     </option>
                   ))}
@@ -475,8 +461,7 @@ function AddProduct() {
               </span>
 
               <span className="mt-2 block text-xs text-[#718073]">
-                JPG, PNG, or other supported image formats.
-                Maximum 5 pictures.
+                JPG, PNG, or other supported image formats. Maximum 5 pictures.
               </span>
 
               <input
@@ -490,8 +475,8 @@ function AddProduct() {
             </label>
 
             <p className="mt-3 text-xs text-[#718073]">
-              You can remove selected photos before publishing.
-              You'll also be able to edit them later.
+              You can remove selected photos before publishing. You'll also be
+              able to edit them later.
             </p>
           </section>
 
@@ -503,8 +488,8 @@ function AddProduct() {
                   Product location
                 </h2>
                 <p className="mt-1 max-w-xl text-sm leading-6 text-[#718073]">
-                  Your registered location is filled in automatically.
-                  Update it if this produce is stored elsewhere.
+                  Your registered location is filled in automatically. Update it
+                  if this produce is stored elsewhere.
                 </p>
               </div>
 
@@ -597,11 +582,10 @@ function AddProduct() {
               </div>
 
               <p className="rounded-xl bg-[#F6F9F2] p-4 text-xs leading-5 text-[#718073]">
-                Coordinates are saved in longitude, latitude order.
-                The location button updates coordinates only;
-                check the address, city, and region before saving.
-                GPS works on localhost or a secure HTTPS website,
-                and requires your permission.
+                Coordinates are saved in longitude, latitude order. The location
+                button updates coordinates only; check the address, city, and
+                region before saving. GPS works on localhost or a secure HTTPS
+                website, and requires your permission.
               </p>
             </div>
           </section>

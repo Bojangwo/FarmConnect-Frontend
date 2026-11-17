@@ -1,25 +1,19 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import {
-  getCategories,
-  getProductById,
-  updateProduct,
-} from "../services/api";
+import { getCategories, getProductById, updateProduct } from "../services/api";
 
 const BACKEND_URL =
   import.meta.env.VITE_BACKEND_URL ||
-  (import.meta.env.VITE_API_URL || "http://localhost:5000/api")
-    .replace(/\/api\/?$/, "");
+  (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(
+    /\/api\/?$/,
+    "",
+  );
 
 const inputClass =
   "mt-2 w-full rounded-xl border border-[#DCE5D6] bg-white px-4 py-3 text-sm text-[#183B2B] outline-none focus:border-[#77975F]";
 
 function NewImagePreview({ file, onRemove }) {
-  const preview = useMemo(
-    () => URL.createObjectURL(file),
-    [file]
-  );
+  const preview = useMemo(() => URL.createObjectURL(file), [file]);
 
   useEffect(() => {
     return () => URL.revokeObjectURL(preview);
@@ -27,11 +21,7 @@ function NewImagePreview({ file, onRemove }) {
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-[#E1E8DC]">
-      <img
-        src={preview}
-        alt={file.name}
-        className="h-36 w-full object-cover"
-      />
+      <img src={preview} alt={file.name} className="h-36 w-full object-cover" />
       <span className="absolute bottom-2 left-2 rounded-full bg-[#194C35] px-2 py-1 text-xs text-white">
         New
       </span>
@@ -80,12 +70,9 @@ function EditProduct() {
         if (cancelled) return;
 
         const product = productData.product;
-        const user = JSON.parse(
-          sessionStorage.getItem("user") || "null"
-        );
+        const user = JSON.parse(sessionStorage.getItem("user") || "null");
 
-        const ownerId =
-          product.farmer?._id || product.farmer;
+        const ownerId = product.farmer?._id || product.farmer;
 
         const userId = user?._id || user?.id;
 
@@ -95,14 +82,13 @@ function EditProduct() {
 
         setCategories(
           categoryData.categories.filter(
-            (category) => category.status === "active"
-          )
+            (category) => category.status === "active",
+          ),
         );
 
         setForm({
           name: product.name || "",
-          category:
-            product.category?._id || product.category || "",
+          category: product.category?._id || product.category || "",
           description: product.description || "",
           price: product.price ?? "",
           quantity: product.quantity ?? "",
@@ -144,12 +130,7 @@ function EditProduct() {
       return;
     }
 
-    if (
-      existingImages.length +
-        newImages.length +
-        selected.length >
-      5
-    ) {
+    if (existingImages.length + newImages.length + selected.length > 5) {
       setError("You can keep a maximum of 5 product images.");
       return;
     }
@@ -159,14 +140,12 @@ function EditProduct() {
   }
 
   function removeExistingImage(path) {
-    setExistingImages((previous) =>
-      previous.filter((image) => image !== path)
-    );
+    setExistingImages((previous) => previous.filter((image) => image !== path));
   }
 
   function removeNewImage(index) {
     setNewImages((previous) =>
-      previous.filter((_, imageIndex) => imageIndex !== index)
+      previous.filter((_, imageIndex) => imageIndex !== index),
     );
   }
 
@@ -183,10 +162,7 @@ function EditProduct() {
         formData.append(key, String(value));
       });
 
-      formData.append(
-        "keepImages",
-        JSON.stringify(existingImages)
-      );
+      formData.append("keepImages", JSON.stringify(existingImages));
 
       newImages.forEach((file) => {
         formData.append("images", file);
@@ -347,7 +323,7 @@ function EditProduct() {
                         <option key={unit} value={unit}>
                           {unit}
                         </option>
-                      )
+                      ),
                     )}
                   </select>
                 </label>
@@ -441,8 +417,8 @@ function EditProduct() {
             </label>
 
             <p className="mt-3 text-xs text-[#718073]">
-              Photos marked for removal will only be removed from the
-              listing when you save your changes.
+              Photos marked for removal will only be removed from the listing
+              when you save your changes.
             </p>
           </section>
 
